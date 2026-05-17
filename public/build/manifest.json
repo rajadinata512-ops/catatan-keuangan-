@@ -1,95 +1,4 @@
 {
-  "__vite-optional-peer-dep:esbuild:vite": {
-    "file": "assets/__vite-optional-peer-dep_esbuild_vite-CBTChORv.js",
-    "name": "__vite-optional-peer-dep_esbuild_vite",
-    "src": "__vite-optional-peer-dep:esbuild:vite",
-    "isDynamicEntry": true
-  },
-  "__vite-optional-peer-dep:fontaine:laravel-vite-plugin": {
-    "file": "assets/__vite-optional-peer-dep_fontaine_laravel-vite-plugin-DYSY4qtQ.js",
-    "name": "__vite-optional-peer-dep_fontaine_laravel-vite-plugin",
-    "src": "__vite-optional-peer-dep:fontaine:laravel-vite-plugin",
-    "isDynamicEntry": true
-  },
-  "__vite-optional-peer-dep:tsx/cjs/api:vite": {
-    "file": "assets/api_vite-B64aOn34.js",
-    "name": "api_vite",
-    "src": "__vite-optional-peer-dep:tsx/cjs/api:vite",
-    "isDynamicEntry": true
-  },
-  "__vite-optional-peer-dep:yaml:vite": {
-    "file": "assets/__vite-optional-peer-dep_yaml_vite-C3WsqBr6.js",
-    "name": "__vite-optional-peer-dep_yaml_vite",
-    "src": "__vite-optional-peer-dep:yaml:vite",
-    "isDynamicEntry": true
-  },
-  "_lib-D9eaK4LZ.js": {
-    "file": "assets/lib-D9eaK4LZ.js",
-    "name": "lib",
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
-  "node_modules/jiti/lib/jiti.mjs": {
-    "file": "assets/jiti-BtK4cZqK.js",
-    "name": "jiti",
-    "src": "node_modules/jiti/lib/jiti.mjs",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
-  "node_modules/laravel-vite-plugin/dist/index.js": {
-    "file": "assets/index-R7aingaS.js",
-    "src": "node_modules/laravel-vite-plugin/dist/index.js"
-  },
-  "node_modules/lightningcss/node/index.mjs": {
-    "file": "assets/node-DVbwO0G6.js",
-    "name": "node",
-    "src": "node_modules/lightningcss/node/index.mjs",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
-  "node_modules/postcss/lib/postcss.mjs": {
-    "file": "assets/postcss-BR3idGxa.js",
-    "name": "postcss",
-    "src": "node_modules/postcss/lib/postcss.mjs",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
-  "node_modules/rolldown/dist/shared/prompt-U5ajztzG.mjs": {
-    "file": "assets/prompt-U5ajztzG-Cw-jkfXS.js",
-    "name": "prompt-U5ajztzG",
-    "src": "node_modules/rolldown/dist/shared/prompt-U5ajztzG.mjs",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
-  "node_modules/vite/dist/node/chunks/build.js": {
-    "file": "assets/build-BmFCDtWF.js",
-    "name": "build",
-    "src": "node_modules/vite/dist/node/chunks/build.js",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js",
-      "_lib-D9eaK4LZ.js"
-    ]
-  },
-  "node_modules/vite/dist/node/chunks/postcss-import.js": {
-    "file": "assets/postcss-import-_gYiirYV.js",
-    "name": "postcss-import",
-    "src": "node_modules/vite/dist/node/chunks/postcss-import.js",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js",
-      "_lib-D9eaK4LZ.js"
-    ]
-  },
   "resources/css/app.css": {
     "file": "assets/app-oPhN2IOd.css",
     "name": "app",
@@ -100,25 +9,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CnrvR3jy.js",
+    "file": "assets/app-BOBdMz5d.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
-    "dynamicImports": [
-      "node_modules/rolldown/dist/shared/prompt-U5ajztzG.mjs",
-      "__vite-optional-peer-dep:esbuild:vite",
-      "resources/js/app.js",
-      "__vite-optional-peer-dep:tsx/cjs/api:vite",
-      "node_modules/jiti/lib/jiti.mjs",
-      "__vite-optional-peer-dep:yaml:vite",
-      "node_modules/vite/dist/node/chunks/postcss-import.js",
-      "node_modules/vite/dist/node/chunks/build.js",
-      "node_modules/postcss/lib/postcss.mjs",
-      "node_modules/lightningcss/node/index.mjs",
-      "__vite-optional-peer-dep:fontaine:laravel-vite-plugin"
-    ],
-    "assets": [
-      "assets/index-R7aingaS.js"
+    "css": [
+      "assets/app-oPhN2IOd.css"
     ]
   }
 }

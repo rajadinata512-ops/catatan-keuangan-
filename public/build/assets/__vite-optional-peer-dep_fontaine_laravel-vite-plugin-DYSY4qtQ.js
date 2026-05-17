@@ -1,1 +1,0 @@
-var e={};throw Error(`Could not resolve "fontaine" imported by "laravel-vite-plugin". Is it installed?`);export{e as default};
