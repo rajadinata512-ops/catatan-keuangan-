@@ -1,4 +1,9 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html>
+<head>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100">
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -44,4 +49,3 @@
             </x-primary-button>
         </div>
     </form>
-</x-guest-layout>
