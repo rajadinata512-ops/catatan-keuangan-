@@ -9,17 +9,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transaksis', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            if (!Schema::hasColumn('transaksis', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->nullable();
+            }
+
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('transaksis', function (Blueprint $table) {
-            //
+
+            if (Schema::hasColumn('transaksis', 'user_id')) {
+                $table->dropColumn('user_id');
+            }
+
         });
     }
 };
