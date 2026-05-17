@@ -7,26 +7,42 @@ use App\Models\Transaksi;
 
 class TransaksiController extends Controller
 {
-        public function index()
-        {
-            return view('transaksi.index', [
-                'transaksis' => [],
-                'totalPemasukan' => 0,
-                'totalPengeluaran' => 0,
-                'saldoAkhir' => 0
-            ]);
-        }
+    public function index()
+    {
+        $transaksis = Transaksi::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        $totalPemasukan = $transaksis->sum('pemasukan');
+
+        $totalPengeluaran = $transaksis->sum('pengeluaran');
+
+        $saldoAkhir = $transaksis->last()->saldo ?? 0;
+
+        return view('transaksi.index', [
+            'transaksis' => $transaksis,
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'saldoAkhir' => $saldoAkhir
+        ]);
+    }
 
     public function store(Request $request)
     {
         $request->validate([
+            'tanggal' => 'required',
+            'keterangan' => 'required',
             'pemasukan' => 'nullable|numeric|min:0',
             'pengeluaran' => 'nullable|numeric|min:0',
         ]);
 
-        $saldoTerakhir = Transaksi::where('user_id', auth()->id())
+        $transaksiTerakhir = Transaksi::where('user_id', auth()->id())
             ->latest()
-            ->first()->saldo ?? 0;
+            ->first();
+
+        $saldoTerakhir = $transaksiTerakhir
+            ? $transaksiTerakhir->saldo
+            : 0;
 
         $saldoBaru =
             $saldoTerakhir
