@@ -7,29 +7,15 @@ use App\Models\Transaksi;
 
 class TransaksiController extends Controller
 {
-    public function index()
-    {
-        $transaksis = Transaksi::where('user_id', auth()->id())
-            ->latest()
-            ->get();
-
-        $totalPemasukan = Transaksi::where('user_id', auth()->id())
-            ->sum('pemasukan');
-
-        $totalPengeluaran = Transaksi::where('user_id', auth()->id())
-            ->sum('pengeluaran');
-
-        $saldoAkhir = Transaksi::where('user_id', auth()->id())
-            ->latest()
-            ->first()->saldo ?? 0;
-
-        return view('transaksi.index', compact(
-            'transaksis',
-            'totalPemasukan',
-            'totalPengeluaran',
-            'saldoAkhir'
-        ));
-    }
+        public function index()
+        {
+            return view('transaksi.index', [
+                'transaksis' => [],
+                'totalPemasukan' => 0,
+                'totalPengeluaran' => 0,
+                'saldoAkhir' => 0
+            ]);
+        }
 
     public function store(Request $request)
     {
@@ -142,7 +128,7 @@ class TransaksiController extends Controller
         }
 
         $html .= '
-        
+
         <tr class="total">
             <td colspan="2">Total Pemasukan</td>
             <td class="money">Rp ' . number_format($totalPemasukan, 0, ',', '.') . '</td>
