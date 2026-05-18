@@ -469,6 +469,7 @@
         font-size:16px;
         border-radius:18px;
         padding:0 18px;
+        color:white;
     }
 
     .save-btn{
