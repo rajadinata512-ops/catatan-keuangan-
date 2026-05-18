@@ -73,7 +73,7 @@
             border-radius:28px;
             padding:28px;
             transition:.3s;
-
+            overflow:hidden;
             min-width:0;
         }
 
@@ -115,11 +115,12 @@
         .value{
             font-size:clamp(18px,2.5vw,48px);
             font-weight:700;
-
+            word-break:break-all;
+            overflow-wrap:break-word;
+            font-size: clamp(24px, 3vw, 48px);
             display:block;
             word-break:break-word;
             overflow-wrap:break-word;
-
             line-height:1.3;
         }
 
@@ -217,6 +218,8 @@
             align-items:center;
             margin-bottom:30px;
             gap:20px;
+            position:relative;
+            z-index:999;
         }
 
         .title-area{
@@ -232,6 +235,10 @@
             border-radius:12px;
             font-weight:bold;
             cursor:pointer;
+            position:absolute;
+            top:40px;
+            right:40px;
+            z-index:9999;
         }
         .logout-btn:hover{
             transform: scale(1.05);
