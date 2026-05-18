@@ -210,15 +210,25 @@
             transform:translateY(-2px);
         }
 
+        .top-bar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            margin-bottom:30px;
+            flex-wrap:wrap;
+        }
+
         .logout-btn{
-            background: linear-gradient(135deg,#ff4d4d,#ff0000);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
+            background:linear-gradient(135deg,#ff4d4d,#ff0000);
+            color:white;
+            border:none;
+            padding:12px 24px;
+            border-radius:14px;
+            font-weight:700;
+            cursor:pointer;
+            font-size:16px;
+            display:block;
         }
 
         .logout-btn:hover{
@@ -532,25 +542,27 @@ footer{
 </head>
 <body>
 
-<div class="container">
+<div class="top-bar">
 
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:60px;">
-        <div>
-            <h1 class="title" style="margin-bottom:8px;">
-                Catatan <span>Keuangan</span>
-            </h1>
-            <p class="subtitle" style="margin-bottom:0;">
-                Kelola pemasukan dan pengeluaran duet mu pakcik
-            </p>
-        </div>
+    <div>
+        <h1 class="title" style="margin-bottom:8px;">
+            Catatan <span>Keuangan</span>
+        </h1>
 
-        <form action="{{ route('logout') }}" method="POST" style="margin-top:8px; flex-shrink:0;">
-            @csrf
-            <button type="submit" class="logout-btn">
-                Logout
-            </button>
-        </form>
+        <p class="subtitle" style="margin-bottom:0;">
+            Kelola pemasukan dan pengeluaran duet mu pakcik
+        </p>
     </div>
+
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
+
+</div>
 
     <!-- CARD -->
 
