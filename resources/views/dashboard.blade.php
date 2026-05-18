@@ -211,21 +211,28 @@
         }
 
         .logout-btn{
-            background:rgba(255,255,255,.04);
-            border:1px solid rgba(255,255,255,.10);
-            color:#9ca3af;
-            padding:16px 26px;
-            border-radius:22px;
-            font-size:16px;
-            font-weight:600;
-            cursor:pointer;
-            transition:.2s ease;
+            background: linear-gradient(135deg,#ff3b3b,#ff0000);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+
+            box-shadow:
+                0 0 15px rgba(255,0,0,.6),
+                0 0 35px rgba(255,0,0,.4);
+
+            transition: .3s;
         }
 
         .logout-btn:hover{
-            background:rgba(255,255,255,.08);
-            color:white;
-            transform:translateY(-2px);
+            transform: translateY(-3px) scale(1.03);
+
+            box-shadow:
+                0 0 20px rgba(255,0,0,.9),
+                0 0 50px rgba(255,0,0,.6);
         }
 
         .table-box{

@@ -60,6 +60,11 @@
             margin-bottom:30px;
         }
 
+        .input-wrap{
+            position:relative;
+            margin-bottom:18px;
+        }
+
         input{
             width:100%;
             height:60px;
@@ -67,7 +72,6 @@
             outline:none;
             border-radius:18px;
             padding:0 20px;
-            margin-bottom:18px;
             background:rgba(255,255,255,.04);
             border:1px solid rgba(255,255,255,.06);
             color:white;
@@ -83,7 +87,56 @@
             color:#9ca3af;
         }
 
-        button{
+        input.has-toggle{
+            padding-right:55px;
+        }
+
+        .toggle-pw{
+            position:absolute;
+            right:18px;
+            top:50%;
+            transform:translateY(-50%);
+            background:none;
+            border:none;
+            cursor:pointer;
+            color:#9ca3af;
+            width:auto;
+            height:auto;
+            padding:0;
+            font-size:20px;
+            display:flex;
+            align-items:center;
+        }
+
+        .toggle-pw:hover{
+            color:white;
+        }
+
+        .error-box{
+            background:rgba(239,68,68,.12);
+            border:1px solid rgba(239,68,68,.3);
+            color:#f87171;
+            padding:12px 16px;
+            border-radius:14px;
+            margin-bottom:18px;
+            font-size:14px;
+        }
+
+        .forgot{
+            display:block;
+            text-align:right;
+            color:#8b5cf6;
+            font-size:13px;
+            text-decoration:none;
+            margin-bottom:18px;
+            margin-top:-10px;
+        }
+
+        .forgot:hover{
+            text-decoration:underline;
+        }
+
+        button[type="submit"]{
             width:100%;
             height:60px;
             border:none;
@@ -93,6 +146,12 @@
             font-size:18px;
             font-weight:600;
             cursor:pointer;
+            transition:.3s;
+        }
+
+        button[type="submit"]:hover{
+            transform:translateY(-2px);
+            box-shadow:0 0 30px rgba(139,92,246,.4);
         }
 
         .bottom{
@@ -116,13 +175,28 @@
 
     <p>Login ke akun kamu</p>
 
-    <form method="POST" action="{{ route('login') }}">
+    @if ($errors->any())
+    <div class="error-box">
+        {{ $errors->first() }}
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}" autocomplete="off">
 
         @csrf
 
-        <input type="email" name="email" placeholder="Email" required>
+        <div class="input-wrap">
+            <input type="email" name="email" placeholder="Email" autocomplete="off" value="{{ old('email') }}" required>
+        </div>
 
-        <input type="password" name="password" placeholder="Password" required>
+        <div class="input-wrap">
+            <input type="password" name="password" id="password" placeholder="Password" class="has-toggle" autocomplete="new-password" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword('password', this)">
+                👁
+            </button>
+        </div>
+
+        <a href="{{ route('password.request') }}" class="forgot">Lupa password?</a>
 
         <button type="submit">Login</button>
 
@@ -134,6 +208,19 @@
     </div>
 
 </div>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+</script>
 
 </body>
 </html>

@@ -60,6 +60,11 @@
             margin-bottom:30px;
         }
 
+        .input-wrap{
+            position:relative;
+            margin-bottom:18px;
+        }
+
         input{
             width:100%;
             height:60px;
@@ -67,18 +72,68 @@
             outline:none;
             border-radius:18px;
             padding:0 20px;
-            margin-bottom:18px;
             background:rgba(255,255,255,.04);
             border:1px solid rgba(255,255,255,.06);
             color:white;
             font-size:16px;
         }
 
+        input:focus{
+            border:1px solid #8b5cf6;
+            box-shadow:0 0 25px rgba(139,92,246,.25);
+        }
+
         input::placeholder{
             color:#9ca3af;
         }
 
-        button{
+        input.has-toggle{
+            padding-right:55px;
+        }
+
+        .toggle-pw{
+            position:absolute;
+            right:18px;
+            top:50%;
+            transform:translateY(-50%);
+            background:none;
+            border:none;
+            cursor:pointer;
+            color:#9ca3af;
+            width:auto;
+            height:auto;
+            padding:0;
+            font-size:20px;
+            display:flex;
+            align-items:center;
+        }
+
+        .toggle-pw:hover{
+            color:white;
+        }
+
+        .error-box{
+            background:rgba(239,68,68,.12);
+            border:1px solid rgba(239,68,68,.3);
+            color:#f87171;
+            padding:12px 16px;
+            border-radius:14px;
+            margin-bottom:18px;
+            font-size:14px;
+        }
+
+        .info-box{
+            background:rgba(139,92,246,.12);
+            border:1px solid rgba(139,92,246,.3);
+            color:#c4b5fd;
+            padding:12px 16px;
+            border-radius:14px;
+            margin-bottom:18px;
+            font-size:14px;
+            text-align:center;
+        }
+
+        button[type="submit"]{
             width:100%;
             height:60px;
             border:none;
@@ -88,6 +143,12 @@
             font-size:18px;
             font-weight:600;
             cursor:pointer;
+            transition:.3s;
+        }
+
+        button[type="submit"]:hover{
+            transform:translateY(-2px);
+            box-shadow:0 0 30px rgba(139,92,246,.4);
         }
 
         .bottom{
@@ -112,17 +173,41 @@
 
     <p>Register akun baru</p>
 
-    <form method="POST" action="{{ route('register') }}">
+    <div class="info-box">
+        📧 Setelah register, cek email kamu untuk verifikasi akun
+    </div>
+
+    @if ($errors->any())
+    <div class="error-box">
+        {{ $errors->first() }}
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('register') }}" autocomplete="off">
 
         @csrf
 
-        <input type="text" name="name" placeholder="Nama" required>
+        <div class="input-wrap">
+            <input type="text" name="name" placeholder="Nama" autocomplete="off" value="{{ old('name') }}" required>
+        </div>
 
-        <input type="email" name="email" placeholder="Email" required>
+        <div class="input-wrap">
+            <input type="email" name="email" placeholder="Email" autocomplete="off" value="{{ old('email') }}" required>
+        </div>
 
-        <input type="password" name="password" placeholder="Password" required>
+        <div class="input-wrap">
+            <input type="password" name="password" id="password" placeholder="Password" class="has-toggle" autocomplete="new-password" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword('password', this)">
+                👁
+            </button>
+        </div>
 
-        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required>
+        <div class="input-wrap">
+            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Konfirmasi Password" class="has-toggle" autocomplete="new-password" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword('password_confirmation', this)">
+                👁
+            </button>
+        </div>
 
         <button type="submit">Register</button>
 
@@ -134,6 +219,19 @@
     </div>
 
 </div>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+</script>
 
 </body>
 </html>
