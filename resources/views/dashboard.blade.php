@@ -211,28 +211,19 @@
         }
 
         .logout-btn{
-            background: linear-gradient(135deg,#ff3b3b,#ff0000);
+            background: linear-gradient(135deg,#ff4d4d,#ff0000);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: bold;
             cursor: pointer;
-
-            box-shadow:
-                0 0 15px rgba(255,0,0,.6),
-                0 0 35px rgba(255,0,0,.4);
-
-            transition: .3s;
+            transition: 0.3s;
         }
 
         .logout-btn:hover{
-            transform: translateY(-3px) scale(1.03);
-
-            box-shadow:
-                0 0 20px rgba(255,0,0,.9),
-                0 0 50px rgba(255,0,0,.6);
+            transform: scale(1.05);
+            opacity: 0.9;
         }
 
         .table-box{
