@@ -41,7 +41,7 @@
         }
 
         .title{
-            font-size:68px;
+            font-size:clamp(36px,5vw,68px);
             font-weight:700;
             line-height:1;
             margin-bottom:12px;
