@@ -545,15 +545,11 @@ footer{
                 Kelola pemasukan dan pengeluaran duet mu pakcik
             </p>
         </div>
-
-        <form action="{{ route('logout') }}" method="POST">
+        <form action="{{ route('logout') }}" method="POST" style="margin-top:8px; flex-shrink:0;">
             @csrf
-
-            <button type="submit" class="delete-btn">
-                Logout
-            </button>
+            <button type="submit" class="logout-btn">Logout</button>
         </form>
-
+    </div>
     <!-- CARD -->
 
     <div class="cards">
