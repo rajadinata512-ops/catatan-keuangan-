@@ -113,21 +113,14 @@
         }
 
         .value{
-            font-size:clamp(22px,2.5vw,48px);
+            font-size:clamp(18px,2.5vw,48px);
             font-weight:700;
 
-            display:flex;
-            align-items:center;
-            gap:6px;
+            display:block;
+            word-break:break-word;
+            overflow-wrap:break-word;
 
-            white-space:nowrap;
-
-            overflow:visible;
-
-            word-break:break-all;
-        }
-        .value br{
-            display:none;
+            line-height:1.3;
         }
 
         .form-box{
@@ -221,7 +214,7 @@
             background:rgba(255,255,255,.03);
             border:1px solid rgba(255,255,255,.08);
             border-radius:32px;
-            overflow-x:auto;
+            overflow:hidden;
             padding:30px;
         }
 
@@ -443,8 +436,7 @@
     }
 
     .value{
-        font-size:clamp(20px,5vw,36px);
-        gap:4px;
+        font-size:clamp(16px,5vw,36px);
     }
 
     /* FORM */
@@ -508,7 +500,7 @@ footer{
     }
 
     .value{
-        font-size:clamp(18px,4.5vw,32px);
+        font-size:clamp(16px,5vw,32px);
     }
 
     .card{
@@ -697,8 +689,7 @@ footer{
 
 flatpickr("#tanggal", {
     dateFormat: "Y-m-d",
-    monthSelectorType: "static",
-    disableMobile: true
+    monthSelectorType: "static"
 });
 
 </script>

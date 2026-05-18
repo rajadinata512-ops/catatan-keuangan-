@@ -1,43 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-    @include('auth.style')
-</head>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
 <body>
 
-<div class="card">
+<div class="box">
 
-    <div class="title">
-        Reset Password
-    </div>
+    <h1>Reset <span>Password</span></h1>
 
-    <div class="subtitle">
-        Buat password baru
-    </div>
+    <p>Buat password baru</p>
 
-    <form method="POST">
+    <form method="POST" action="{{ route('password.store') }}">
+
         @csrf
 
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
+        <input type="hidden" name="token" value="{{ request()->route('token') }}">
 
-        <div class="input-group">
-            <label>Password Baru</label>
-            <input type="password" name="password" required>
-        </div>
+        <input type="email" name="email" placeholder="Email" required>
 
-        <div class="input-group">
-            <label>Konfirmasi Password</label>
-            <input type="password" name="password_confirmation" required>
-        </div>
+        <input type="password" name="password" placeholder="Password Baru" required>
 
-        <button class="btn">
-            Reset Password
-        </button>
+        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required>
+
+        <button type="submit">Reset Password</button>
 
     </form>
 
@@ -45,3 +37,4 @@
 
 </body>
 </html>
+```
