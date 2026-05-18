@@ -413,18 +413,19 @@
 @media(max-width:900px){
 
     .container{
-        width:92%;
-        padding:40px 0;
+        width:94%;
+        padding:28px 0;
     }
 
     .title{
-        font-size:52px;
-        line-height:1.1;
+        font-size:42px;
+        line-height:1.15;
+        margin-bottom:8px;
     }
 
     .subtitle{
-        font-size:17px;
-        margin-top:10px;
+        font-size:15px;
+        margin-bottom:32px;
     }
 
     /* CARD */
@@ -432,69 +433,85 @@
     .cards{
         display:flex;
         flex-direction:column;
-        gap:18px;
+        gap:16px;
     }
 
     .card{
         width:100%;
-        padding:28px;
+        padding:22px;
+        border-radius:24px;
+    }
+
+    .card h3{
+        font-size:15px;
+        margin-bottom:10px;
     }
 
     .value{
-        font-size:42px;
-        gap:6px;
+        font-size:clamp(32px,8vw,46px);
+        line-height:1.1;
     }
 
     /* FORM */
 
     .form-box{
-        padding:20px;
+        padding:18px;
         border-radius:24px;
     }
 
     .form-grid{
         grid-template-columns:1fr;
-        gap:16px;
+        gap:14px;
     }
 
     input{
-        height:65px;
-        font-size:18px;
+        height:58px;
+        font-size:16px;
+        border-radius:18px;
+        padding:0 18px;
     }
 
     .save-btn{
         width:100%;
-        height:65px;
-        font-size:18px;
+        height:58px;
+        font-size:17px;
+        border-radius:18px;
+    }
+
+    /* BUTTON EXPORT */
+
+    .export-btn,
+    .delete-btn{
+        width:100%;
+        font-size:15px;
+        padding:15px;
     }
 
     /* TABLE */
 
-    .table-box::-webkit-scrollbar{
-        height:6px;
+    .table-box{
+        overflow-x:auto;
+        padding:18px;
+        border-radius:24px;
     }
 
-    .table-box::-webkit-scrollbar-thumb{
-        background:rgba(139,92,246,.4);
-        border-radius:20px;
-    }
     table{
         min-width:650px;
     }
 
     th,
     td{
-        font-size:15px;
-        padding:18px 14px;
+        font-size:14px;
+        padding:16px 12px;
     }
 
     /* FOOTER */
 
-footer{
-    font-size:15px;
-    line-height:1.7;
-    padding:40px 0 20px;
-}
+    footer{
+        font-size:14px;
+        line-height:1.6;
+        padding:32px 0 18px;
+    }
 }
 
 /* HP KECIL */
@@ -502,19 +519,24 @@ footer{
 @media(max-width:500px){
 
     .title{
-        font-size:42px;
+        font-size:34px;
+    }
+
+    .subtitle{
+        font-size:14px;
     }
 
     .value{
-        font-size:42px;
+        font-size:36px;
     }
 
     .card{
-        padding:24px;
+        padding:18px;
     }
 
     .table-box{
-        border-radius:22px;
+        padding:14px;
+        overflow-x:auto;
     }
 }
 
