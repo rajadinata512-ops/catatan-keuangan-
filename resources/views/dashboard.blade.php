@@ -546,13 +546,13 @@ footer{
             </p>
         </div>
 
-        <form action="{{ route('logout') }}" method="POST" style="margin-top:8px; flex-shrink:0;">
+        <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="logout-btn">
+
+            <button type="submit" class="delete-btn">
                 Logout
             </button>
         </form>
-    </div>
 
     <!-- CARD -->
 
