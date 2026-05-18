@@ -113,16 +113,18 @@
         }
 
         .value{
-            font-size:clamp(28px,3vw,52px);
+            font-size:clamp(22px,2.5vw,48px);
             font-weight:700;
 
             display:flex;
             align-items:center;
-            gap:10px;
+            gap:6px;
 
             white-space:nowrap;
 
-            overflow:hidden;
+            overflow:visible;
+
+            word-break:break-all;
         }
         .value br{
             display:none;
@@ -219,7 +221,7 @@
             background:rgba(255,255,255,.03);
             border:1px solid rgba(255,255,255,.08);
             border-radius:32px;
-            overflow:hidden;
+            overflow-x:auto;
             padding:30px;
         }
 
@@ -413,19 +415,18 @@
 @media(max-width:900px){
 
     .container{
-        width:94%;
-        padding:28px 0;
+        width:92%;
+        padding:40px 0;
     }
 
     .title{
-        font-size:42px;
-        line-height:1.15;
-        margin-bottom:8px;
+        font-size:52px;
+        line-height:1.1;
     }
 
     .subtitle{
-        font-size:15px;
-        margin-bottom:32px;
+        font-size:17px;
+        margin-top:10px;
     }
 
     /* CARD */
@@ -433,86 +434,69 @@
     .cards{
         display:flex;
         flex-direction:column;
-        gap:16px;
+        gap:18px;
     }
 
     .card{
         width:100%;
-        padding:22px;
-        border-radius:24px;
-    }
-
-    .card h3{
-        font-size:15px;
-        margin-bottom:10px;
+        padding:28px;
     }
 
     .value{
-        font-size:clamp(32px,8vw,46px);
-        line-height:1.1;
+        font-size:clamp(20px,5vw,36px);
+        gap:4px;
     }
 
     /* FORM */
 
     .form-box{
-        padding:18px;
+        padding:20px;
         border-radius:24px;
     }
 
     .form-grid{
         grid-template-columns:1fr;
-        gap:14px;
+        gap:16px;
     }
 
     input{
-        height:58px;
-        font-size:16px;
-        border-radius:18px;
-        padding:0 18px;
-        color:white;
+        height:65px;
+        font-size:18px;
     }
 
     .save-btn{
         width:100%;
-        height:58px;
-        font-size:17px;
-        border-radius:18px;
-    }
-
-    /* BUTTON EXPORT */
-
-    .export-btn,
-    .delete-btn{
-        width:100%;
-        font-size:15px;
-        padding:15px;
+        height:65px;
+        font-size:18px;
     }
 
     /* TABLE */
 
-    .table-box{
-        overflow-x:auto;
-        padding:18px;
-        border-radius:24px;
+    .table-box::-webkit-scrollbar{
+        height:6px;
     }
 
+    .table-box::-webkit-scrollbar-thumb{
+        background:rgba(139,92,246,.4);
+        border-radius:20px;
+    }
     table{
         min-width:650px;
     }
 
     th,
     td{
-        font-size:14px;
-        padding:16px 12px;
+        font-size:15px;
+        padding:18px 14px;
     }
 
     /* FOOTER */
 
-    footer{
-        font-size:14px;
-        line-height:1.6;
-        padding:32px 0 18px;
-    }
+footer{
+    font-size:15px;
+    line-height:1.7;
+    padding:40px 0 20px;
+}
 }
 
 /* HP KECIL */
@@ -520,24 +504,19 @@
 @media(max-width:500px){
 
     .title{
-        font-size:34px;
-    }
-
-    .subtitle{
-        font-size:14px;
+        font-size:42px;
     }
 
     .value{
-        font-size:36px;
+        font-size:clamp(18px,4.5vw,32px);
     }
 
     .card{
-        padding:18px;
+        padding:24px;
     }
 
     .table-box{
-        padding:14px;
-        overflow-x:auto;
+        border-radius:22px;
     }
 }
 
@@ -718,7 +697,8 @@
 
 flatpickr("#tanggal", {
     dateFormat: "Y-m-d",
-    monthSelectorType: "static"
+    monthSelectorType: "static",
+    disableMobile: true
 });
 
 </script>
