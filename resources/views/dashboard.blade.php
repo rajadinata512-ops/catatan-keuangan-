@@ -211,26 +211,28 @@
         }
 
         .top-bar{
+            width:100%;
             display:flex;
             justify-content:space-between;
             align-items:center;
-            gap:20px;
             margin-bottom:30px;
-            flex-wrap:wrap;
+            gap:20px;
+        }
+
+        .title-area{
+            display:flex;
+            flex-direction:column;
         }
 
         .logout-btn{
-            background:linear-gradient(135deg,#ff4d4d,#ff0000);
+            background:red;
             color:white;
             border:none;
             padding:12px 24px;
-            border-radius:14px;
-            font-weight:700;
+            border-radius:12px;
+            font-weight:bold;
             cursor:pointer;
-            font-size:16px;
-            display:block;
         }
-
         .logout-btn:hover{
             transform: scale(1.05);
             opacity: 0.9;
@@ -544,12 +546,12 @@ footer{
 
 <div class="top-bar">
 
-    <div>
-        <h1 class="title" style="margin-bottom:8px;">
+    <div class="title-area">
+        <h1 class="title">
             Catatan <span>Keuangan</span>
         </h1>
 
-        <p class="subtitle" style="margin-bottom:0;">
+        <p class="subtitle">
             Kelola pemasukan dan pengeluaran duet mu pakcik
         </p>
     </div>
