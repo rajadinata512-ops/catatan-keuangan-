@@ -82,6 +82,12 @@
 
     <h1>Verify <span>Email</span></h1>
 
+    @if (session('status') == 'verification-link-sent')
+    <div style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:#c4b5fd;padding:12px 16px;border-radius:14px;margin-bottom:18px;font-size:14px;text-align:center;">
+        ✅ Link verifikasi baru sudah dikirim ke email kamu!
+    </div>
+    @endif
+
     <p>
         Silahkan cek email kamu lalu klik link verifikasi akun
     </p>

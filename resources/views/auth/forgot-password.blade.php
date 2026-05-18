@@ -96,6 +96,18 @@
 
     <p>Masukkan email untuk reset password</p>
 
+    @if (session('status'))
+    <div style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:#c4b5fd;padding:12px 16px;border-radius:14px;margin-bottom:18px;font-size:14px;text-align:center;">
+        ✅ {{ session('status') }}
+    </div>
+    @endif
+
+    @if ($errors->any())
+    <div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:12px 16px;border-radius:14px;margin-bottom:18px;font-size:14px;">
+        {{ $errors->first() }}
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('password.email') }}">
 
         @csrf
