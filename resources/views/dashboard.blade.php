@@ -210,6 +210,24 @@
             transform:translateY(-2px);
         }
 
+        .logout-btn{
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.10);
+            color:#9ca3af;
+            padding:16px 26px;
+            border-radius:22px;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+            transition:.2s ease;
+        }
+
+        .logout-btn:hover{
+            background:rgba(255,255,255,.08);
+            color:white;
+            transform:translateY(-2px);
+        }
+
         .table-box{
             background:rgba(255,255,255,.03);
             border:1px solid rgba(255,255,255,.08);
@@ -518,9 +536,18 @@ footer{
 
 <div class="container">
 
-    <h1 class="title">
-        Catatan <span>Keuangan</span>
-    </h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:12px;">
+        <h1 class="title" style="margin-bottom:0;">
+            Catatan <span>Keuangan</span>
+        </h1>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="logout-btn">
+                Logout
+            </button>
+        </form>
+    </div>
 
     <p class="subtitle">
         Kelola pemasukan dan pengeluaran duet mu pakcik 
