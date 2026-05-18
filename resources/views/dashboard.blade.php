@@ -536,22 +536,23 @@ footer{
 
 <div class="container">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:12px;">
-        <h1 class="title" style="margin-bottom:0;">
-            Catatan <span>Keuangan</span>
-        </h1>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:60px;">
+        <div>
+            <h1 class="title" style="margin-bottom:8px;">
+                Catatan <span>Keuangan</span>
+            </h1>
+            <p class="subtitle" style="margin-bottom:0;">
+                Kelola pemasukan dan pengeluaran duet mu pakcik
+            </p>
+        </div>
 
-        <form action="{{ route('logout') }}" method="POST">
+        <form action="{{ route('logout') }}" method="POST" style="margin-top:8px; flex-shrink:0;">
             @csrf
             <button type="submit" class="logout-btn">
                 Logout
             </button>
         </form>
     </div>
-
-    <p class="subtitle">
-        Kelola pemasukan dan pengeluaran duet mu pakcik 
-    </p>
 
     <!-- CARD -->
 
