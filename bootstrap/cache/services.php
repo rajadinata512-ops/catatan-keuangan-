@@ -32,7 +32,8 @@
     28 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     29 => 'Termwind\\Laravel\\TermwindServiceProvider',
     30 => 'Pest\\Laravel\\PestServiceProvider',
-    31 => 'App\\Providers\\AppServiceProvider',
+    31 => 'Mailtrap\\Bridge\\Laravel\\MailtrapSdkProvider',
+    32 => 'App\\Providers\\AppServiceProvider',
   ),
   'eager' => 
   array (
@@ -52,7 +53,8 @@
     13 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     14 => 'Termwind\\Laravel\\TermwindServiceProvider',
     15 => 'Pest\\Laravel\\PestServiceProvider',
-    16 => 'App\\Providers\\AppServiceProvider',
+    16 => 'Mailtrap\\Bridge\\Laravel\\MailtrapSdkProvider',
+    17 => 'App\\Providers\\AppServiceProvider',
   ),
   'deferred' => 
   array (
