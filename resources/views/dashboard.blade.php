@@ -550,6 +550,8 @@ footer{
 </head>
 <body>
 
+<div class="container">
+
 <div class="top-bar">
 
     <div class="title-area">
