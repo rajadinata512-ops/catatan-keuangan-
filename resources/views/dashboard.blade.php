@@ -228,21 +228,20 @@
         }
 
         .logout-btn{
-            background:red;
-            color:white;
-            border:none;
-            padding:12px 24px;
-            border-radius:12px;
-            font-weight:bold;
+            background:rgba(255,70,70,.12);
+            border:1px solid rgba(255,70,70,.25);
+            color:#ff5c5c;
+            padding:16px 26px;
+            border-radius:22px;
+            font-size:16px;
+            font-weight:600;
             cursor:pointer;
-            position:absolute;
-            top:40px;
-            right:40px;
-            z-index:9999;
+            transition:.2s ease;
+            white-space:nowrap;
         }
         .logout-btn:hover{
-            transform: scale(1.05);
-            opacity: 0.9;
+            background:rgba(255,70,70,.18);
+            transform:translateY(-2px);
         }
 
         .table-box{
@@ -554,22 +553,23 @@ footer{
 <div class="top-bar">
 
     <div class="title-area">
-        <h1 class="title">
-            Catatan <span>Keuangan</span>
-        </h1>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+            <h1 class="title">
+                Catatan <span>Keuangan</span>
+            </h1>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="logout-btn">
+                    Logout
+                </button>
+            </form>
+        </div>
 
         <p class="subtitle">
             Kelola pemasukan dan pengeluaran duet mu pakcik
         </p>
     </div>
-
-    <form action="{{ route('logout') }}" method="POST">
-        @csrf
-
-        <button type="submit" class="logout-btn">
-            Logout
-        </button>
-    </form>
 
 </div>
 
