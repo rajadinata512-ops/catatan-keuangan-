@@ -4,147 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:'Poppins',sans-serif;
-        }
-
+        *{ margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
         body{
             min-height:100vh;
-            background:
-            radial-gradient(circle at top left, rgba(124,58,237,.25), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(168,85,247,.22), transparent 30%),
-            #020617;
-
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:20px;
-            color:white;
+            background: radial-gradient(circle at top left, rgba(124,58,237,.25), transparent 30%),
+                        radial-gradient(circle at bottom right, rgba(168,85,247,.22), transparent 30%), #020617;
+            display:flex; justify-content:center; align-items:center; padding:20px; color:white;
         }
-
         .box{
-            width:100%;
-            max-width:430px;
-            background:rgba(255,255,255,.03);
-            border:1px solid rgba(255,255,255,.08);
-            backdrop-filter:blur(18px);
-            border-radius:32px;
-            padding:40px 30px;
+            width:100%; max-width:430px;
+            background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08);
+            backdrop-filter:blur(18px); border-radius:32px; padding:40px 30px;
             box-shadow:0 0 40px rgba(139,92,246,.15);
         }
-
-        h1{
-            font-size:40px;
-            text-align:center;
-            margin-bottom:10px;
+        h1{ font-size:40px; text-align:center; margin-bottom:10px; }
+        h1 span{ background:linear-gradient(135deg,#8b5cf6,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        p{ text-align:center; color:#9ca3af; margin-bottom:30px; }
+        .input-wrap{ position:relative; margin-bottom:18px; }
+        .input-wrap input{
+            width:100%; height:60px; border:none; outline:none;
+            border-radius:18px; padding:0 55px 0 20px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+            color:white; font-size:16px;
         }
-
-        h1 span{
-            background:linear-gradient(135deg,#8b5cf6,#6366f1);
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-        }
-
-        p{
-            text-align:center;
-            color:#9ca3af;
-            margin-bottom:30px;
-        }
-
         input{
-            width:100%;
-            height:60px;
-            border:none;
-            outline:none;
-            border-radius:18px;
-            padding:0 20px;
-            margin-bottom:18px;
-            background:rgba(255,255,255,.04);
-            border:1px solid rgba(255,255,255,.06);
-            color:white;
-            font-size:16px;
+            width:100%; height:60px; border:none; outline:none;
+            border-radius:18px; padding:0 20px; margin-bottom:18px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+            color:white; font-size:16px;
         }
-
-        input:focus{
-            border:1px solid #8b5cf6;
-            box-shadow:0 0 25px rgba(139,92,246,.25);
+        input:focus, .input-wrap input:focus{
+            border:1px solid #8b5cf6; box-shadow:0 0 25px rgba(139,92,246,.25);
         }
-
-        input::placeholder{
-            color:#9ca3af;
+        input::placeholder{ color:#9ca3af; }
+        .toggle-pw{
+            position:absolute; right:16px; top:50%; transform:translateY(-50%);
+            background:none; border:none; cursor:pointer; color:#9ca3af;
+            width:auto; height:auto; display:flex; align-items:center; padding:4px;
+            border-radius:6px; transition:color .2s;
         }
-
-        button{
-            width:100%;
-            height:60px;
-            border:none;
-            border-radius:18px;
+        .toggle-pw:hover{ color:#8b5cf6; }
+        button[type="submit"]{
+            width:100%; height:60px; border:none; border-radius:18px;
             background:linear-gradient(135deg,#6366f1,#a855f7);
-            color:white;
-            font-size:18px;
-            font-weight:600;
-            cursor:pointer;
-            transition:.3s;
+            color:white; font-size:18px; font-weight:600; cursor:pointer; transition:.3s; margin-top:4px;
         }
-
-        button:hover{
-            transform:translateY(-2px);
-            box-shadow:0 0 30px rgba(139,92,246,.4);
-        }
-
-        .bottom{
-            margin-top:20px;
-            text-align:center;
-            color:#9ca3af;
-        }
-
-        .bottom a{
-            color:#8b5cf6;
-            text-decoration:none;
-        }
-
+        button[type="submit"]:hover{ transform:translateY(-2px); box-shadow:0 0 30px rgba(139,92,246,.4); }
+        .bottom{ margin-top:20px; text-align:center; color:#9ca3af; }
+        .bottom a{ color:#8b5cf6; text-decoration:none; }
     </style>
-
 </head>
 <body>
-
 <div class="box">
-
     <h1>Reset <span>Password</span></h1>
-
     <p>Buat password baru kamu</p>
 
+    @if ($errors->any())
+    <div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:12px 16px;border-radius:14px;margin-bottom:18px;font-size:14px;">
+        {{ $errors->first() }}
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('password.store') }}">
-
         @csrf
-
         <input type="hidden" name="token" value="{{ request()->route('token') }}">
+        <input type="email" name="email" placeholder="Email" value="{{ request()->email ?? old('email') }}" required>
 
-        <input type="email" name="email" placeholder="Email" required>
+        <div class="input-wrap">
+            <input type="password" id="password" name="password" placeholder="Password Baru" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword('password', this)"></button>
+        </div>
 
-        <input type="password" name="password" placeholder="Password Baru" required>
-
-        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required>
+        <div class="input-wrap">
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi Password" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword('password_confirmation', this)"></button>
+        </div>
 
         <button type="submit">Reset Password</button>
-
     </form>
 
     <div class="bottom">
-        Ingat password?
-        <a href="{{ route('login') }}">Login</a>
+        Ingat password? <a href="{{ route('login') }}">Login</a>
     </div>
-
 </div>
 
+<script>
+const eyeOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const eyeClosed = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = eyeClosed;
+    } else {
+        input.type = 'password';
+        btn.innerHTML = eyeOpen;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-pw').forEach(btn => btn.innerHTML = eyeOpen);
+});
+</script>
 </body>
 </html>
