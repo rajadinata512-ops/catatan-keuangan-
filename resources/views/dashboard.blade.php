@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Catatan Keuangan</title>
 
@@ -214,12 +214,10 @@
         .top-bar{
             width:100%;
             display:flex;
-            justify-content:space-between;
-            align-items:center;
+            justify-content:flex-start;
+            align-items:flex-start;
             margin-bottom:30px;
             gap:20px;
-            position:relative;
-            z-index:999;
         }
 
         .title-area{
@@ -248,7 +246,7 @@
             background:rgba(255,255,255,.03);
             border:1px solid rgba(255,255,255,.08);
             border-radius:32px;
-            overflow:hidden;
+            overflow-x:auto;
             padding:30px;
         }
 
@@ -555,15 +553,18 @@ footer{
 <div class="top-bar">
 
     <div class="title-area">
-    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-        <h1 class="title">
-            Catatan <span>Keuangan</span>
-        </h1>
-        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-            @csrf
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
-    </div>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+            <h1 class="title">
+                Catatan <span>Keuangan</span>
+            </h1>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="logout-btn">
+                    Logout
+                </button>
+            </form>
+        </div>
 
         <p class="subtitle">
             Kelola pemasukan dan pengeluaran duet mu pakcik
@@ -727,6 +728,8 @@ footer{
 
 </div>
 
+</div>
+
 <!-- FLATPICKR -->
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -735,7 +738,8 @@ footer{
 
 flatpickr("#tanggal", {
     dateFormat: "Y-m-d",
-    monthSelectorType: "static"
+    monthSelectorType: "static",
+    disableMobile: true
 });
 
 </script>
