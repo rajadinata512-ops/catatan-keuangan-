@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Catatan Keuangan</title>
 
@@ -28,7 +29,6 @@
             radial-gradient(circle at top left, rgba(124,58,237,0.22), transparent 30%),
             radial-gradient(circle at bottom right, rgba(168,85,247,0.22), transparent 30%),
             #020617;
-
             color:white;
             overflow-x:hidden;
         }
@@ -88,36 +88,16 @@
             font-weight:500;
         }
 
-        .income{
-            border-color:rgba(34,197,94,.4);
-        }
-
-        .expense{
-            border-color:rgba(239,68,68,.4);
-        }
-
-        .balance{
-            border-color:rgba(139,92,246,.4);
-        }
-
-        .income .value{
-            color:#22c55e;
-        }
-
-        .expense .value{
-            color:#ff4d4d;
-        }
-
-        .balance .value{
-            color:#8b5cf6;
-        }
+        .income{ border-color:rgba(34,197,94,.4); }
+        .expense{ border-color:rgba(239,68,68,.4); }
+        .balance{ border-color:rgba(139,92,246,.4); }
+        .income .value{ color:#22c55e; }
+        .expense .value{ color:#ff4d4d; }
+        .balance .value{ color:#8b5cf6; }
 
         .value{
-            font-size:clamp(18px,2.5vw,48px);
+            font-size:clamp(24px,3vw,48px);
             font-weight:700;
-            word-break:break-all;
-            overflow-wrap:break-word;
-            font-size: clamp(24px, 3vw, 48px);
             display:block;
             word-break:break-word;
             overflow-wrap:break-word;
@@ -125,10 +105,10 @@
         }
 
         .form-box{
-            background: rgba(255,255,255,.03);
+            background:rgba(255,255,255,.03);
             border:1px solid rgba(255,255,255,.05);
-            backdrop-filter: blur(18px);
-            border-radius: 30px;
+            backdrop-filter:blur(18px);
+            border-radius:30px;
             padding:28px;
             margin-bottom:35px;
         }
@@ -148,7 +128,6 @@
             padding:0 22px;
             font-size:20px;
             color:white;
-
             background:rgba(255,255,255,.04);
             border:1px solid rgba(255,255,255,.06);
         }
@@ -157,6 +136,14 @@
             border:1px solid #8b5cf6;
             box-shadow:0 0 25px rgba(139,92,246,.25);
         }
+
+        /* Hilangkan spinner number input */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button{
+            -webkit-appearance:none;
+            margin:0;
+        }
+        input[type=number]{ -moz-appearance:textfield; }
 
         button{
             border:none;
@@ -177,22 +164,23 @@
             box-shadow:0 0 30px rgba(139,92,246,.4);
         }
 
+        .save-btn:disabled{
+            opacity:0.6;
+            cursor:not-allowed;
+            transform:none;
+        }
+
         .export-btn{
             padding:18px 28px;
             background:rgba(255,255,255,.04);
             color:white;
             border:1px solid rgba(255,255,255,.08);
-            margin-bottom:35px;
             font-size:18px;
         }
 
-        .export-btn:hover{
-            background:#8b5cf6;
-        }
+        .export-btn:hover{ background:#8b5cf6; }
 
-        .export-link{
-             text-decoration:none;
-        }
+        .export-link{ text-decoration:none; }
 
         .delete-btn{
             background:rgba(255,70,70,.12);
@@ -220,10 +208,7 @@
             gap:20px;
         }
 
-        .title-area{
-            display:flex;
-            flex-direction:column;
-        }
+        .title-area{ display:flex; flex-direction:column; }
 
         .logout-btn{
             background:rgba(255,70,70,.12);
@@ -237,9 +222,26 @@
             transition:.2s ease;
             white-space:nowrap;
         }
+
         .logout-btn:hover{
             background:rgba(255,70,70,.18);
             transform:translateY(-2px);
+        }
+
+        /* Alert validasi */
+        .alert-error{
+            background:rgba(255,70,70,.12);
+            border:1px solid rgba(255,70,70,.3);
+            border-radius:16px;
+            padding:14px 20px;
+            margin-bottom:18px;
+            color:#ff5c5c;
+            font-size:15px;
+        }
+
+        .alert-error ul{
+            margin:0;
+            padding-left:18px;
         }
 
         .table-box{
@@ -268,27 +270,18 @@
             background:rgba(255,255,255,.04);
         }
 
-        tr td:first-child{
-            border-radius:18px 0 0 18px;
-        }
+        tr td:first-child{ border-radius:18px 0 0 18px; }
+        tr td:last-child{ border-radius:0 18px 18px 0; }
 
-        tr td:last-child{
-            border-radius:0 18px 18px 0;
-        }
+        .income-text{ color:#22c55e; font-weight:600; }
+        .expense-text{ color:#ff4d4d; font-weight:600; }
+        .balance-text{ color:#8b5cf6; font-weight:600; }
 
-        .income-text{
-            color:#22c55e;
-            font-weight:600;
-        }
-
-        .expense-text{
-            color:#ff4d4d;
-            font-weight:600;
-        }
-
-        .balance-text{
-            color:#8b5cf6;
-            font-weight:600;
+        .empty-state{
+            text-align:center;
+            padding:40px 20px;
+            color:#6b7280;
+            font-size:16px;
         }
 
         footer{
@@ -298,29 +291,15 @@
             font-size:18px;
         }
 
-        /* FLATPICKR ESTETIK */
-
-/* ===== FLATPICKR CLEAN ===== */
-
-/* ===== FLATPICKR PREMIUM ===== */
-
-.flatpickr-calendar{
-    background: rgba(15,15,25,.98) !important;
-
-    border:1px solid rgba(139,92,246,.18) !important;
-
-    border-radius:22px !important;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.45),
-        0 0 25px rgba(139,92,246,.12);
-
-    overflow:hidden;
-
-    animation: fadeIn .18s ease;
-}
-
-/* HEADER */
+        /* FLATPICKR */
+        .flatpickr-calendar{
+            background:rgba(15,15,25,.98) !important;
+            border:1px solid rgba(139,92,246,.18) !important;
+            border-radius:22px !important;
+            box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 25px rgba(139,92,246,.12);
+            overflow:hidden;
+            animation:fadeIn .18s ease;
+        }
 
         .flatpickr-months{
             background:rgba(255,255,255,.02) !important;
@@ -334,215 +313,73 @@
         }
 
         .flatpickr-prev-month svg,
-        .flatpickr-next-month svg{
-            fill:#c4b5fd !important;
-        }
+        .flatpickr-next-month svg{ fill:#c4b5fd !important; }
 
-        /* WEEK */
-
-        .flatpickr-weekdays{
-            background:transparent !important;
-
-            border:none !important;
-
-            box-shadow:none !important;
-        }
+        .flatpickr-weekdays,
+        .flatpickr-rContainer,
+        .flatpickr-days,
+        .dayContainer{ background:transparent !important; border:none !important; box-shadow:none !important; }
 
         .flatpickr-weekday{
             color:#8b5cf6 !important;
-
             font-size:11px !important;
-
             font-weight:600 !important;
-
             background:transparent !important;
-
-            border:none !important;
-
-            box-shadow:none !important;
         }
-
-        /* TAMBAH INI */
-
-        .flatpickr-rContainer{
-            border:none !important;
-        }
-
-        .flatpickr-days{
-            border:none !important;
-        }
-
-        .dayContainer{
-            border:none !important;
-        }
-
-        /* DAYS */
 
         .flatpickr-day{
             color:#e5e7eb !important;
-
             border:none !important;
-
             border-radius:12px !important;
-
             transition:.18s ease;
         }
 
-        .flatpickr-day:hover{
-            background:rgba(139,92,246,.16) !important;
-        }
+        .flatpickr-day:hover{ background:rgba(139,92,246,.16) !important; }
 
         .flatpickr-day.selected{
             background:linear-gradient(135deg,#7c3aed,#a855f7) !important;
-
             color:white !important;
-
-            box-shadow:
-                0 0 15px rgba(168,85,247,.35);
+            box-shadow:0 0 15px rgba(168,85,247,.35);
         }
 
-        .flatpickr-day.today{
-            border:1px solid rgba(168,85,247,.45) !important;
-        }
-
-        /* BULAN LAIN */
+        .flatpickr-day.today{ border:1px solid rgba(168,85,247,.45) !important; }
 
         .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay{
-            color:rgba(255,255,255,.20) !important;
-        }
-
-        /* REMOVE ARROW */
+        .flatpickr-day.nextMonthDay{ color:rgba(255,255,255,.20) !important; }
 
         .flatpickr-calendar:before,
-        .flatpickr-calendar:after{
-            display:none !important;
-        }
-
-/* ANIMATION */
+        .flatpickr-calendar:after{ display:none !important; }
 
         @keyframes fadeIn{
-            from{
-                opacity:0;
-                transform:translateY(-8px);
-            }
-
-            to{
-                opacity:1;
-                transform:translateY(0);
-            }
+            from{ opacity:0; transform:translateY(-8px); }
+            to{ opacity:1; transform:translateY(0); }
         }
-   
-/* =========================
-   RESPONSIVE MOBILE
-========================= */
 
-@media(max-width:900px){
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .container{ width:92%; padding:40px 0; }
+            .title{ font-size:52px; line-height:1.1; }
+            .subtitle{ font-size:17px; margin-top:10px; }
+            .cards{ display:flex; flex-direction:column; gap:18px; }
+            .card{ width:100%; padding:28px; }
+            .value{ font-size:clamp(16px,5vw,36px); }
+            .form-box{ padding:20px; border-radius:24px; }
+            .form-grid{ grid-template-columns:1fr; gap:16px; }
+            input{ height:65px; font-size:18px; }
+            .save-btn{ width:100%; height:65px; font-size:18px; }
+            .table-box::-webkit-scrollbar{ height:6px; }
+            .table-box::-webkit-scrollbar-thumb{ background:rgba(139,92,246,.4); border-radius:20px; }
+            table{ min-width:650px; }
+            th, td{ font-size:15px; padding:18px 14px; }
+            footer{ font-size:15px; line-height:1.7; padding:40px 0 20px; }
+        }
 
-    .container{
-        width:92%;
-        padding:40px 0;
-    }
-
-    .title{
-        font-size:52px;
-        line-height:1.1;
-    }
-
-    .subtitle{
-        font-size:17px;
-        margin-top:10px;
-    }
-
-    /* CARD */
-
-    .cards{
-        display:flex;
-        flex-direction:column;
-        gap:18px;
-    }
-
-    .card{
-        width:100%;
-        padding:28px;
-    }
-
-    .value{
-        font-size:clamp(16px,5vw,36px);
-    }
-
-    /* FORM */
-
-    .form-box{
-        padding:20px;
-        border-radius:24px;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-        gap:16px;
-    }
-
-    input{
-        height:65px;
-        font-size:18px;
-    }
-
-    .save-btn{
-        width:100%;
-        height:65px;
-        font-size:18px;
-    }
-
-    /* TABLE */
-
-    .table-box::-webkit-scrollbar{
-        height:6px;
-    }
-
-    .table-box::-webkit-scrollbar-thumb{
-        background:rgba(139,92,246,.4);
-        border-radius:20px;
-    }
-    table{
-        min-width:650px;
-    }
-
-    th,
-    td{
-        font-size:15px;
-        padding:18px 14px;
-    }
-
-    /* FOOTER */
-
-footer{
-    font-size:15px;
-    line-height:1.7;
-    padding:40px 0 20px;
-}
-}
-
-/* HP KECIL */
-
-@media(max-width:500px){
-
-    .title{
-        font-size:42px;
-    }
-
-    .value{
-        font-size:clamp(16px,5vw,32px);
-    }
-
-    .card{
-        padding:24px;
-    }
-
-    .table-box{
-        border-radius:22px;
-    }
-}
+        @media(max-width:500px){
+            .title{ font-size:42px; }
+            .value{ font-size:clamp(16px,5vw,32px); }
+            .card{ padding:24px; }
+            .table-box{ border-radius:22px; }
+        }
 
     </style>
 </head>
@@ -550,38 +387,37 @@ footer{
 
 <div class="container">
 
-<div class="top-bar">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="title-area">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                <h1 class="title">
+                    Catatan <span>Keuangan</span>
+                </h1>
 
-    <div class="title-area">
-        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-            <h1 class="title">
-                Catatan <span>Keuangan</span>
-            </h1>
+                <!-- LOGOUT -->
+                <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
 
-            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    Logout
-                </button>
-            </form>
+            <p class="subtitle">
+                Kelola pemasukan dan pengeluaran duet mu pakcik
+            </p>
         </div>
-
-        <p class="subtitle">
-            Kelola pemasukan dan pengeluaran duet mu pakcik
-        </p>
     </div>
 
-</div>
-
-    <!-- CARD -->
-
+    <!-- CARDS -->
     <div class="cards">
 
         <div class="card income">
             <h3>Total Pemasukan</h3>
-        <div class="value">
-                 Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
-        </div>
+            <div class="value">
+                Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+            </div>
         </div>
 
         <div class="card expense">
@@ -600,11 +436,21 @@ footer{
 
     </div>
 
-    <!-- FORM -->
-
+    <!-- FORM TAMBAH TRANSAKSI -->
     <div class="form-box">
 
-        <form action="/transaksi" method="POST">
+        {{-- Tampilkan error validasi dari server --}}
+        @if ($errors->any())
+            <div class="alert-error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('transaksi.store') }}" method="POST" id="formTransaksi">
             @csrf
 
             <div class="form-grid">
@@ -614,13 +460,18 @@ footer{
                     id="tanggal"
                     name="tanggal"
                     placeholder="Pilih tanggal"
+                    required
+                    readonly
+                    value="{{ old('tanggal') }}"
                 >
 
                 <input
                     type="text"
                     name="keterangan"
                     placeholder="Keterangan"
-                    min="0"
+                    required
+                    maxlength="255"
+                    value="{{ old('keterangan') }}"
                 >
 
                 <input
@@ -628,15 +479,20 @@ footer{
                     name="pemasukan"
                     placeholder="Pemasukan"
                     min="0"
+                    step="1"
+                    value="{{ old('pemasukan', 0) }}"
                 >
 
                 <input
                     type="number"
                     name="pengeluaran"
                     placeholder="Pengeluaran"
+                    min="0"
+                    step="1"
+                    value="{{ old('pengeluaran', 0) }}"
                 >
 
-                <button class="save-btn" type="submit">
+                <button class="save-btn" type="submit" id="btnSimpan">
                     Simpan
                 </button>
 
@@ -646,36 +502,32 @@ footer{
 
     </div>
 
-    <!-- EXPORT -->
+    <!-- HAPUS & EXPORT -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:35px;">
 
-<div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:35px;">
+        {{-- Hapus semua dengan konfirmasi --}}
+        <form action="{{ route('transaksi.destroyAll') }}" method="POST"
+              onsubmit="return confirm('⚠️ Yakin mau hapus SEMUA riwayat?\nData tidak bisa dikembalikan!')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="delete-btn">
+                Hapus Riwayat
+            </button>
+        </form>
 
-    <form action="/hapus-semua" method="POST"
-          onsubmit="return confirm('Hapus semua riwayat?')">
+        {{-- Export Excel --}}
+        <a href="{{ route('transaksi.export') }}" class="export-link">
+            <button type="button" class="export-btn">
+                Export Excel
+            </button>
+        </a>
 
-        @csrf
-        @method('DELETE')
-
-        <button type="submit" class="delete-btn">
-            Hapus Riwayat
-        </button>
-
-    </form>
-
-    <a href="/export" class="export-link">
-        <button type="button" class="export-btn">
-            Export Excel
-        </button>
-    </a>
-
-</div>
+    </div>
 
     <!-- TABLE -->
-
     <div class="table-box">
 
         <table>
-
             <thead>
                 <tr>
                     <th>Tanggal</th>
@@ -685,39 +537,31 @@ footer{
                     <th>Saldo</th>
                 </tr>
             </thead>
-
             <tbody>
 
-                @foreach ($transaksis as $transaksi)
-
+                @forelse ($transaksis as $transaksi)
                 <tr>
-
-                    <td>
-                        {{ $transaksi->tanggal }}
-                    </td>
-
-                    <td>
-                        {{ $transaksi->keterangan }}
-                    </td>
-
+                    <td>{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d/m/Y') }}</td>
+                    <td>{{ $transaksi->keterangan }}</td>
                     <td class="income-text">
                         Rp {{ number_format($transaksi->pemasukan, 0, ',', '.') }}
                     </td>
-
                     <td class="expense-text">
                         Rp {{ number_format($transaksi->pengeluaran, 0, ',', '.') }}
                     </td>
-
                     <td class="balance-text">
                         Rp {{ number_format($transaksi->saldo, 0, ',', '.') }}
                     </td>
-
                 </tr>
-
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        Belum ada transaksi. Yuk catat pengeluaran pertama kamu!
+                    </td>
+                </tr>
+                @endforelse
 
             </tbody>
-
         </table>
 
     </div>
@@ -728,19 +572,65 @@ footer{
 
 </div>
 
-</div>
-
 <!-- FLATPICKR -->
-
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
 
-flatpickr("#tanggal", {
-    dateFormat: "Y-m-d",
-    monthSelectorType: "static",
-    disableMobile: true
-});
+    // Flatpickr init
+    flatpickr("#tanggal", {
+        dateFormat: "Y-m-d",
+        monthSelectorType: "static",
+        disableMobile: true,
+        maxDate: "today"
+    });
+
+    // Cegah double submit (klik Simpan 2x)
+    document.getElementById('formTransaksi').addEventListener('submit', function() {
+        const btn = document.getElementById('btnSimpan');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+    });
+
+    // Validasi client-side: minimal salah satu pemasukan/pengeluaran diisi
+    document.getElementById('formTransaksi').addEventListener('submit', function(e) {
+        const pemasukan  = parseFloat(document.querySelector('[name=pemasukan]').value)  || 0;
+        const pengeluaran = parseFloat(document.querySelector('[name=pengeluaran]').value) || 0;
+        const tanggal    = document.querySelector('[name=tanggal]').value;
+        const keterangan = document.querySelector('[name=keterangan]').value.trim();
+
+        if (!tanggal) {
+            e.preventDefault();
+            alert('Pilih tanggal dulu ya!');
+            document.getElementById('btnSimpan').disabled = false;
+            document.getElementById('btnSimpan').textContent = 'Simpan';
+            return;
+        }
+
+        if (!keterangan) {
+            e.preventDefault();
+            alert('Keterangan tidak boleh kosong!');
+            document.getElementById('btnSimpan').disabled = false;
+            document.getElementById('btnSimpan').textContent = 'Simpan';
+            return;
+        }
+
+        if (pemasukan === 0 && pengeluaran === 0) {
+            e.preventDefault();
+            alert('Isi minimal pemasukan atau pengeluaran!');
+            document.getElementById('btnSimpan').disabled = false;
+            document.getElementById('btnSimpan').textContent = 'Simpan';
+            return;
+        }
+
+        if (pemasukan < 0 || pengeluaran < 0) {
+            e.preventDefault();
+            alert('Nominal tidak boleh minus!');
+            document.getElementById('btnSimpan').disabled = false;
+            document.getElementById('btnSimpan').textContent = 'Simpan';
+            return;
+        }
+    });
 
 </script>
 
