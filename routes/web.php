@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])
         ->name('transaksi.destroy');
 
+    // FIX: nama method diubah dari 'hapusSemua' → 'destroyAll' agar konsisten dengan route name
     Route::delete('/transaksi', [TransaksiController::class, 'destroyAll'])
         ->middleware('throttle:5,1')
         ->name('transaksi.destroyAll');
