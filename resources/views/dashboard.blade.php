@@ -1014,6 +1014,7 @@
     const fp = flatpickr("#tanggal", {
         locale: "id",
         dateFormat: "Y-m-d",
+        position: "below",
         monthSelectorType: "static",
         maxDate: "today",
         onOpen:  function(){ wrapper.classList.add('active'); },
@@ -1080,6 +1081,7 @@
     const fpEdit = flatpickr("#editTanggal", {
         locale: "id",
         dateFormat: "Y-m-d",
+        position: "below",
         monthSelectorType: "static",
         maxDate: "today",
         onOpen:  function(){ modalWrapper.classList.add('active'); },
