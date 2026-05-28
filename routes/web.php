@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transaksi.update');
 
     Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])
+        ->middleware('throttle:20,1')
         ->name('transaksi.destroy');
 
     Route::delete('/transaksi', [TransaksiController::class, 'destroyAll'])

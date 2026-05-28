@@ -15,22 +15,22 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    // FIX: tambah rate limit registrasi — cegah spam account (10x/menit per IP)
+    // Rate limit ketat: max 3 register per menit per IP — cegah bot spam akun + spam Resend
     Route::post('register', [RegisteredUserController::class, 'store'])
-        ->middleware('throttle:10,1');
+        ->middleware('throttle:3,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    // FIX: tambah rate limit login — cegah brute force (20x/menit per IP, + Laravel sendiri limit 5x per email)
+    // Rate limit login: max 10x/menit per IP (+ Laravel lock 5x gagal per email)
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('throttle:20,1');
+        ->middleware('throttle:10,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('throttle:5,1')
+        ->middleware('throttle:3,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
