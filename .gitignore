@@ -24,3 +24,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Bootstrap cache — jangan pernah commit, ini di-generate otomatis
+/bootstrap/cache/*.php
+/bootstrap/cache/*.tmp
