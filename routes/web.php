@@ -22,6 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:30,1')
         ->name('transaksi.store');
 
+    Route::put('/transaksi/{transaksi}', [TransaksiController::class, 'update'])
+        ->middleware('throttle:30,1')
+        ->name('transaksi.update');
+
     Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])
         ->name('transaksi.destroy');
 

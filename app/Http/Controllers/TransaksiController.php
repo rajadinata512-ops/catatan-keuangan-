@@ -80,6 +80,44 @@ class TransaksiController extends Controller
         return back()->with('success', 'Transaksi berhasil ditambahkan.');
     }
 
+    /**
+     * Update transaksi + recalculate semua saldo setelahnya.
+     */
+    public function update(Request $request, Transaksi $transaksi)
+    {
+        if ($transaksi->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'tanggal'     => 'required|date',
+            'keterangan'  => 'required|string|max:500',
+            'pemasukan'   => 'nullable|numeric|min:0|max:999999999999',
+            'pengeluaran' => 'nullable|numeric|min:0|max:999999999999',
+        ]);
+
+        $transaksi->update([
+            'tanggal'     => $request->tanggal,
+            'keterangan'  => $request->keterangan,
+            'pemasukan'   => $request->pemasukan   ?? 0,
+            'pengeluaran' => $request->pengeluaran ?? 0,
+        ]);
+
+        // Recalculate saldo semua transaksi user ini secara berurutan
+        $semuaTransaksi = Transaksi::where('user_id', auth()->id())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $saldo = 0;
+        foreach ($semuaTransaksi as $t) {
+            $saldo = $saldo + $t->pemasukan - $t->pengeluaran;
+            $t->saldo = $saldo;
+            $t->save();
+        }
+
+        return back()->with('success', 'Transaksi berhasil diperbarui.');
+    }
+
     public function destroy(Transaksi $transaksi)
     {
         if ($transaksi->user_id !== auth()->id()) {
@@ -87,6 +125,18 @@ class TransaksiController extends Controller
         }
 
         $transaksi->delete();
+
+        // Recalculate saldo setelah hapus
+        $semuaTransaksi = Transaksi::where('user_id', auth()->id())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $saldo = 0;
+        foreach ($semuaTransaksi as $t) {
+            $saldo = $saldo + $t->pemasukan - $t->pengeluaran;
+            $t->saldo = $saldo;
+            $t->save();
+        }
 
         return back()->with('success', 'Transaksi berhasil dihapus.');
     }

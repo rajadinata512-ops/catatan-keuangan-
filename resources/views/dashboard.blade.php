@@ -137,10 +137,8 @@
             box-shadow:0 0 25px rgba(139,92,246,.25);
         }
 
-        /* input tanggal readonly — kasih cursor pointer biar keliatan bisa diklik */
         input[readonly]{ cursor:pointer; }
 
-        /* Hilangkan spinner number input */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button{
             -webkit-appearance:none;
@@ -231,7 +229,6 @@
             transform:translateY(-2px);
         }
 
-        /* Alert validasi */
         .alert-error{
             background:rgba(255,70,70,.12);
             border:1px solid rgba(255,70,70,.3);
@@ -245,6 +242,16 @@
         .alert-error ul{
             margin:0;
             padding-left:18px;
+        }
+
+        .alert-success{
+            background:rgba(34,197,94,.10);
+            border:1px solid rgba(34,197,94,.3);
+            border-radius:16px;
+            padding:14px 20px;
+            margin-bottom:18px;
+            color:#22c55e;
+            font-size:15px;
         }
 
         .table-box{
@@ -294,7 +301,7 @@
             font-size:18px;
         }
 
-        /* DATE WRAPPER — ikon kalender di dalam input */
+        /* DATE WRAPPER */
         .date-wrapper{
             position:relative;
             display:flex;
@@ -315,13 +322,11 @@
             transition:color .25s, filter .25s;
         }
 
-        /* saat kalender terbuka — icon nyala */
         .date-wrapper.active .date-icon{
             color:#a78bfa;
             filter:drop-shadow(0 0 7px rgba(167,139,250,.6));
         }
 
-        /* beri ruang ke kiri untuk icon kalender */
         .date-wrapper input,
         .date-wrapper .flatpickr-input{
             padding-left:54px !important;
@@ -392,6 +397,243 @@
             to{ opacity:1; transform:translateY(0); }
         }
 
+        /* ========================
+           ACTION BUTTONS PER ROW
+        ======================== */
+        .row-actions{
+            display:flex;
+            gap:8px;
+            align-items:center;
+        }
+
+        .btn-edit-row{
+            background:rgba(99,102,241,.15);
+            border:1px solid rgba(99,102,241,.35);
+            color:#a5b4fc;
+            padding:8px 16px;
+            border-radius:12px;
+            font-size:13px;
+            font-weight:600;
+            cursor:pointer;
+            transition:.2s ease;
+            white-space:nowrap;
+        }
+
+        .btn-edit-row:hover{
+            background:rgba(99,102,241,.28);
+            transform:translateY(-1px);
+            box-shadow:0 0 12px rgba(99,102,241,.3);
+        }
+
+        .btn-del-row{
+            background:rgba(255,70,70,.10);
+            border:1px solid rgba(255,70,70,.25);
+            color:#f87171;
+            padding:8px 16px;
+            border-radius:12px;
+            font-size:13px;
+            font-weight:600;
+            cursor:pointer;
+            transition:.2s ease;
+            white-space:nowrap;
+        }
+
+        .btn-del-row:hover{
+            background:rgba(255,70,70,.20);
+            transform:translateY(-1px);
+        }
+
+        /* ========================
+           MODAL EDIT
+        ======================== */
+        .modal-overlay{
+            display:none;
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.65);
+            backdrop-filter:blur(6px);
+            z-index:1000;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+
+        .modal-overlay.open{
+            display:flex;
+        }
+
+        .modal-box{
+            background:rgba(8,8,20,.97);
+            border:1px solid rgba(139,92,246,.25);
+            border-radius:30px;
+            padding:36px;
+            width:100%;
+            max-width:560px;
+            box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(139,92,246,.12);
+            animation:modalIn .22s ease;
+            position:relative;
+        }
+
+        @keyframes modalIn{
+            from{ opacity:0; transform:scale(.93) translateY(10px); }
+            to{ opacity:1; transform:scale(1) translateY(0); }
+        }
+
+        .modal-title{
+            font-size:22px;
+            font-weight:700;
+            margin-bottom:24px;
+            background:linear-gradient(135deg,#8b5cf6,#6366f1);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .modal-close{
+            position:absolute;
+            top:20px;
+            right:24px;
+            background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.1);
+            color:#9ca3af;
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            font-size:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            transition:.2s;
+        }
+
+        .modal-close:hover{
+            background:rgba(255,70,70,.15);
+            color:#f87171;
+            border-color:rgba(255,70,70,.3);
+        }
+
+        .modal-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+            margin-bottom:16px;
+        }
+
+        .modal-field{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+
+        .modal-field.full{
+            grid-column:1/-1;
+        }
+
+        .modal-label{
+            font-size:13px;
+            color:#9ca3af;
+            font-weight:500;
+            padding-left:4px;
+        }
+
+        .modal-input{
+            height:54px;
+            border:none;
+            outline:none;
+            border-radius:16px;
+            padding:0 18px;
+            font-size:17px;
+            color:white;
+            background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.08);
+            transition:.2s;
+        }
+
+        .modal-input:focus{
+            border:1px solid #8b5cf6;
+            box-shadow:0 0 20px rgba(139,92,246,.2);
+        }
+
+        .modal-input[readonly]{ cursor:pointer; }
+
+        .modal-footer{
+            display:flex;
+            gap:12px;
+            margin-top:24px;
+        }
+
+        .btn-update{
+            flex:1;
+            height:54px;
+            background:linear-gradient(135deg,#6366f1,#a855f7);
+            color:white;
+            font-size:17px;
+            font-weight:600;
+            border-radius:16px;
+            border:none;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        .btn-update:hover{
+            transform:translateY(-2px);
+            box-shadow:0 0 25px rgba(139,92,246,.4);
+        }
+
+        .btn-update:disabled{
+            opacity:0.6;
+            cursor:not-allowed;
+            transform:none;
+        }
+
+        .btn-cancel{
+            height:54px;
+            padding:0 28px;
+            background:rgba(255,255,255,.04);
+            color:#9ca3af;
+            font-size:17px;
+            font-weight:600;
+            border-radius:16px;
+            border:1px solid rgba(255,255,255,.08);
+            cursor:pointer;
+            transition:.2s;
+        }
+
+        .btn-cancel:hover{
+            background:rgba(255,255,255,.08);
+            color:white;
+        }
+
+        /* Date icon inside modal */
+        .modal-date-wrapper{
+            position:relative;
+            display:flex;
+            align-items:center;
+        }
+
+        .modal-date-icon{
+            position:absolute;
+            left:16px;
+            top:50%;
+            transform:translateY(-50%);
+            pointer-events:auto;
+            cursor:pointer;
+            z-index:3;
+            color:rgba(196,181,253,.65);
+            display:flex;
+            align-items:center;
+            transition:color .25s;
+        }
+
+        .modal-date-wrapper.active .modal-date-icon{
+            color:#a78bfa;
+        }
+
+        .modal-date-wrapper .modal-input{
+            padding-left:46px !important;
+            width:100%;
+        }
+
         /* RESPONSIVE */
         @media(max-width:900px){
             .container{ width:92%; padding:40px 0; }
@@ -406,9 +648,10 @@
             .save-btn{ width:100%; height:65px; font-size:18px; }
             .table-box::-webkit-scrollbar{ height:6px; }
             .table-box::-webkit-scrollbar-thumb{ background:rgba(139,92,246,.4); border-radius:20px; }
-            table{ min-width:650px; }
+            table{ min-width:700px; }
             th, td{ font-size:15px; padding:18px 14px; }
             footer{ font-size:15px; line-height:1.7; padding:40px 0 20px; }
+            .modal-grid{ grid-template-columns:1fr; }
         }
 
         @media(max-width:500px){
@@ -416,6 +659,7 @@
             .value{ font-size:clamp(16px,5vw,32px); }
             .card{ padding:24px; }
             .table-box{ border-radius:22px; }
+            .modal-box{ padding:24px; }
         }
 
     </style>
@@ -473,10 +717,14 @@
 
     </div>
 
+    <!-- FLASH SUCCESS -->
+    @if (session('success'))
+        <div class="alert-success">{{ session('success') }}</div>
+    @endif
+
     <!-- FORM TAMBAH TRANSAKSI -->
     <div class="form-box">
 
-        {{-- Tampilkan error validasi dari server --}}
         @if ($errors->any())
             <div class="alert-error">
                 <ul>
@@ -557,7 +805,6 @@
     <!-- HAPUS & EXPORT -->
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:35px;">
 
-        {{-- Hapus semua dengan konfirmasi --}}
         <form action="{{ route('transaksi.destroyAll') }}" method="POST"
               onsubmit="return confirm('⚠️ Yakin mau hapus SEMUA riwayat?\nData tidak bisa dikembalikan!')">
             @csrf
@@ -567,7 +814,6 @@
             </button>
         </form>
 
-        {{-- Export Excel --}}
         <a href="{{ route('transaksi.export') }}" class="export-link">
             <button type="button" class="export-btn">
                 Export Excel
@@ -587,6 +833,7 @@
                     <th>Pemasukan</th>
                     <th>Pengeluaran</th>
                     <th>Saldo</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -604,10 +851,40 @@
                     <td class="balance-text">
                         Rp {{ number_format($transaksi->saldo, 0, ',', '.') }}
                     </td>
+                    <td>
+                        <div class="row-actions">
+                            <!-- Tombol Edit -->
+                            <button
+                                type="button"
+                                class="btn-edit-row"
+                                onclick="openEditModal(
+                                    {{ $transaksi->id }},
+                                    '{{ $transaksi->tanggal }}',
+                                    '{{ addslashes($transaksi->keterangan) }}',
+                                    {{ $transaksi->pemasukan }},
+                                    {{ $transaksi->pengeluaran }}
+                                )"
+                            >
+                                ✏️ Edit
+                            </button>
+
+                            <!-- Tombol Hapus per baris -->
+                            <form
+                                action="{{ route('transaksi.destroy', $transaksi->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Hapus transaksi ini?')"
+                                style="margin:0;"
+                            >
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-del-row">🗑 Hapus</button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="empty-state">
+                    <td colspan="6" class="empty-state">
                         Belum ada transaksi. Yuk catat pengeluaran pertama kamu!
                     </td>
                 </tr>
@@ -624,13 +901,114 @@
 
 </div>
 
+<!-- ========================
+     MODAL EDIT TRANSAKSI
+======================== -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+
+        <button class="modal-close" onclick="closeEditModal()" title="Tutup">✕</button>
+
+        <div class="modal-title">Edit Transaksi</div>
+
+        <form id="formEdit" method="POST">
+            @csrf
+            @method('PUT')
+
+            <div class="modal-grid">
+
+                <!-- Tanggal -->
+                <div class="modal-field full">
+                    <label class="modal-label">Tanggal</label>
+                    <div class="modal-date-wrapper" id="modalDateWrapper">
+                        <span class="modal-date-icon" id="modalDateIconBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.85"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="4"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8"  y1="2" x2="8"  y2="6"/>
+                                <line x1="3"  y1="10" x2="21" y2="10"/>
+                                <circle cx="8"  cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                                <circle cx="12" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                                <circle cx="16" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            id="editTanggal"
+                            name="tanggal"
+                            class="modal-input"
+                            placeholder="Pilih tanggal"
+                            required
+                            readonly
+                        >
+                    </div>
+                </div>
+
+                <!-- Keterangan -->
+                <div class="modal-field full">
+                    <label class="modal-label">Keterangan</label>
+                    <input
+                        type="text"
+                        id="editKeterangan"
+                        name="keterangan"
+                        class="modal-input"
+                        placeholder="Keterangan"
+                        maxlength="255"
+                        required
+                    >
+                </div>
+
+                <!-- Pemasukan -->
+                <div class="modal-field">
+                    <label class="modal-label">Pemasukan</label>
+                    <input
+                        type="number"
+                        id="editPemasukan"
+                        name="pemasukan"
+                        class="modal-input"
+                        placeholder="0"
+                        min="0"
+                        step="1"
+                    >
+                </div>
+
+                <!-- Pengeluaran -->
+                <div class="modal-field">
+                    <label class="modal-label">Pengeluaran</label>
+                    <input
+                        type="number"
+                        id="editPengeluaran"
+                        name="pengeluaran"
+                        class="modal-input"
+                        placeholder="0"
+                        min="0"
+                        step="1"
+                    >
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">Batal</button>
+                <button type="submit" class="btn-update" id="btnUpdate">Simpan Perubahan</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
 <!-- FLATPICKR -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <script>
 
-    // Flatpickr init
+    // ========================
+    // Flatpickr — form tambah
+    // ========================
     const wrapper = document.getElementById('dateWrapper');
 
     const fp = flatpickr("#tanggal", {
@@ -642,25 +1020,24 @@
         onClose: function(){ wrapper.classList.remove('active'); }
     });
 
-    // Klik icon kalender = toggle buka/tutup picker
     document.querySelector('.date-icon').addEventListener('click', function(e){
         e.stopPropagation();
         fp.isOpen ? fp.close() : fp.open();
     });
 
-    // Cegah double submit (klik Simpan 2x)
+    // Cegah double submit
     document.getElementById('formTransaksi').addEventListener('submit', function() {
         const btn = document.getElementById('btnSimpan');
         btn.disabled = true;
         btn.textContent = 'Menyimpan...';
     });
 
-    // Validasi client-side: minimal salah satu pemasukan/pengeluaran diisi
+    // Validasi client-side form tambah
     document.getElementById('formTransaksi').addEventListener('submit', function(e) {
-        const pemasukan  = parseFloat(document.querySelector('[name=pemasukan]').value)  || 0;
+        const pemasukan   = parseFloat(document.querySelector('[name=pemasukan]').value)   || 0;
         const pengeluaran = parseFloat(document.querySelector('[name=pengeluaran]').value) || 0;
-        const tanggal    = document.querySelector('[name=tanggal]').value;
-        const keterangan = document.querySelector('[name=keterangan]').value.trim();
+        const tanggal     = document.querySelector('[name=tanggal]').value;
+        const keterangan  = document.querySelector('[name=keterangan]').value.trim();
 
         if (!tanggal) {
             e.preventDefault();
@@ -693,6 +1070,100 @@
             document.getElementById('btnSimpan').textContent = 'Simpan';
             return;
         }
+    });
+
+    // ========================
+    // Flatpickr — modal edit
+    // ========================
+    const modalWrapper = document.getElementById('modalDateWrapper');
+
+    const fpEdit = flatpickr("#editTanggal", {
+        locale: "id",
+        dateFormat: "Y-m-d",
+        monthSelectorType: "static",
+        maxDate: "today",
+        onOpen:  function(){ modalWrapper.classList.add('active'); },
+        onClose: function(){ modalWrapper.classList.remove('active'); }
+    });
+
+    document.getElementById('modalDateIconBtn').addEventListener('click', function(e){
+        e.stopPropagation();
+        fpEdit.isOpen ? fpEdit.close() : fpEdit.open();
+    });
+
+    // ========================
+    // Buka / tutup modal edit
+    // ========================
+    function openEditModal(id, tanggal, keterangan, pemasukan, pengeluaran) {
+        // Set action form ke route update
+        const form = document.getElementById('formEdit');
+        form.action = '/transaksi/' + id;
+
+        // Isi field
+        fpEdit.setDate(tanggal, true);
+        document.getElementById('editKeterangan').value  = keterangan;
+        document.getElementById('editPemasukan').value   = pemasukan  > 0 ? pemasukan  : '';
+        document.getElementById('editPengeluaran').value = pengeluaran > 0 ? pengeluaran : '';
+
+        // Reset tombol
+        const btn = document.getElementById('btnUpdate');
+        btn.disabled = false;
+        btn.textContent = 'Simpan Perubahan';
+
+        // Tampilkan
+        document.getElementById('editModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Klik backdrop = tutup modal
+    document.getElementById('editModal').addEventListener('click', function(e){
+        if (e.target === this) closeEditModal();
+    });
+
+    // ESC = tutup modal
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') closeEditModal();
+    });
+
+    // Validasi + disable double submit pada form edit
+    document.getElementById('formEdit').addEventListener('submit', function(e) {
+        const pemasukan   = parseFloat(document.getElementById('editPemasukan').value)   || 0;
+        const pengeluaran = parseFloat(document.getElementById('editPengeluaran').value) || 0;
+        const tanggal     = document.getElementById('editTanggal').value;
+        const keterangan  = document.getElementById('editKeterangan').value.trim();
+
+        if (!tanggal) {
+            e.preventDefault();
+            alert('Pilih tanggal dulu ya!');
+            return;
+        }
+
+        if (!keterangan) {
+            e.preventDefault();
+            alert('Keterangan tidak boleh kosong!');
+            return;
+        }
+
+        if (pemasukan === 0 && pengeluaran === 0) {
+            e.preventDefault();
+            alert('Isi minimal pemasukan atau pengeluaran!');
+            return;
+        }
+
+        if (pemasukan < 0 || pengeluaran < 0) {
+            e.preventDefault();
+            alert('Nominal tidak boleh minus!');
+            return;
+        }
+
+        const btn = document.getElementById('btnUpdate');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
     });
 
 </script>
