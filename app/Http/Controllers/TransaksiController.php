@@ -7,6 +7,30 @@ use App\Models\Transaksi;
 
 class TransaksiController extends Controller
 {
+    /**
+     * Halaman utama dashboard — menampilkan ringkasan & daftar transaksi.
+     */
+    public function dashboard()
+    {
+        $transaksis = Transaksi::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        $totalPemasukan   = $transaksis->sum('pemasukan');
+        $totalPengeluaran = $transaksis->sum('pengeluaran');
+        $saldoAkhir       = $transaksis->last()->saldo ?? 0;
+
+        return view('dashboard', [
+            'transaksis'       => $transaksis,
+            'totalPemasukan'   => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'saldoAkhir'       => $saldoAkhir,
+        ]);
+    }
+
+    /**
+     * Halaman /transaksi — dipakai kalau masih butuh route terpisah.
+     */
     public function index()
     {
         $transaksis = Transaksi::where('user_id', auth()->id())
@@ -58,7 +82,6 @@ class TransaksiController extends Controller
 
     public function destroy(Transaksi $transaksi)
     {
-        // Pastikan hanya pemilik yang bisa hapus (authorization)
         if ($transaksi->user_id !== auth()->id()) {
             abort(403);
         }
@@ -68,10 +91,6 @@ class TransaksiController extends Controller
         return back()->with('success', 'Transaksi berhasil dihapus.');
     }
 
-    /**
-     * Hapus semua transaksi milik user yang sedang login.
-     * Nama method harus sama dengan yang dipanggil di routes/web.php: destroyAll
-     */
     public function destroyAll()
     {
         Transaksi::where('user_id', auth()->id())->delete();
@@ -93,7 +112,6 @@ class TransaksiController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        // ⚠ PENTING: semua data di-escape dengan htmlspecialchars() untuk cegah XSS di file export
         $html = '
         <html>
         <head>
@@ -118,7 +136,6 @@ class TransaksiController extends Controller
         </tr>';
 
         foreach ($transaksis as $t) {
-            // htmlspecialchars() mencegah XSS injection dari data keterangan/tanggal
             $html .= '<tr>
                 <td>' . htmlspecialchars($t->tanggal,    ENT_QUOTES, 'UTF-8') . '</td>
                 <td>' . htmlspecialchars($t->keterangan, ENT_QUOTES, 'UTF-8') . '</td>
