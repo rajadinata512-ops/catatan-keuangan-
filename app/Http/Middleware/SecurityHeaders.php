@@ -29,14 +29,17 @@ class SecurityHeaders
         // Batasi informasi referrer
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Content Security Policy — sesuaikan jika pakai CDN/font eksternal
+        // Content Security Policy
+        // cdn.jsdelivr.net  → flatpickr JS + CSS
+        // fonts.googleapis.com → Google Fonts CSS
+        // fonts.gstatic.com   → file font aktual dari Google
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline'; " .   // unsafe-inline dibutuhkan Vite dev; di prod bisa diperketat
-            "style-src 'self' 'unsafe-inline'; " .
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " .
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " .
             "img-src 'self' data:; " .
-            "font-src 'self'; " .
+            "font-src 'self' https://fonts.gstatic.com; " .
             "connect-src 'self'; " .
             "frame-ancestors 'none';"
         );
