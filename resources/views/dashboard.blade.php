@@ -532,7 +532,7 @@
                     placeholder="Pemasukan"
                     min="0"
                     step="1"
-                    value="{{ old('pemasukan', 0) }}"
+                    value="{{ old('pemasukan') }}"
                 >
 
                 <input
@@ -541,7 +541,7 @@
                     placeholder="Pengeluaran"
                     min="0"
                     step="1"
-                    value="{{ old('pengeluaran', 0) }}"
+                    value="{{ old('pengeluaran') }}"
                 >
 
                 <button class="save-btn" type="submit" id="btnSimpan">
