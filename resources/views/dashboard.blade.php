@@ -291,6 +291,39 @@
             font-size:18px;
         }
 
+        /* DATE WRAPPER — ikon kalender di dalam input */
+        .date-wrapper{
+            position:relative;
+            display:flex;
+            align-items:center;
+        }
+
+        .date-icon{
+            position:absolute;
+            left:20px;
+            top:50%;
+            transform:translateY(-50%);
+            pointer-events:none;
+            z-index:3;
+            color:rgba(196,181,253,.65);
+            display:flex;
+            align-items:center;
+            transition:color .25s, filter .25s;
+        }
+
+        /* saat kalender terbuka — icon nyala */
+        .date-wrapper.active .date-icon{
+            color:#a78bfa;
+            filter:drop-shadow(0 0 7px rgba(167,139,250,.6));
+        }
+
+        /* beri ruang ke kiri untuk icon, berlaku ke altInput yg dibuat flatpickr */
+        .date-wrapper input,
+        .date-wrapper .flatpickr-input{
+            padding-left:54px !important;
+            width:100% !important;
+        }
+
         /* FLATPICKR */
         .flatpickr-calendar{
             background:rgba(15,15,25,.98) !important;
@@ -455,15 +488,30 @@
 
             <div class="form-grid">
 
-                <input
-                    type="text"
-                    id="tanggal"
-                    name="tanggal"
-                    placeholder="Pilih tanggal"
-                    required
-                    readonly
-                    value="{{ old('tanggal') }}"
-                >
+                <div class="date-wrapper" id="dateWrapper">
+                    <span class="date-icon">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.85"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="4"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8"  y1="2" x2="8"  y2="6"/>
+                            <line x1="3"  y1="10" x2="21" y2="10"/>
+                            <circle cx="8"  cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="12" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="16" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="tanggal"
+                        name="tanggal"
+                        placeholder="Pilih tanggal"
+                        required
+                        readonly
+                        value="{{ old('tanggal') }}"
+                    >
+                </div>
 
                 <input
                     type="text"
@@ -574,15 +622,25 @@
 
 <!-- FLATPICKR -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <script>
 
-    // Flatpickr init
+    // Flatpickr init — locale Indonesia, altInput biar tampil "29 Mei 2026" ke user
+    // tapi value yang dikirim ke server tetap "Y-m-d" (yang dibutuhkan DB)
+    const wrapper = document.getElementById('dateWrapper');
+
     flatpickr("#tanggal", {
+        locale: "id",
         dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d F Y",
         monthSelectorType: "static",
         disableMobile: true,
-        maxDate: "today"
+        maxDate: "today",
+        defaultDate: "today",
+        onOpen:  function(){ wrapper.classList.add('active'); },
+        onClose: function(){ wrapper.classList.remove('active'); }
     });
 
     // Cegah double submit (klik Simpan 2x)
