@@ -137,6 +137,9 @@
             box-shadow:0 0 25px rgba(139,92,246,.25);
         }
 
+        /* input tanggal readonly — kasih cursor pointer biar keliatan bisa diklik */
+        input[readonly]{ cursor:pointer; }
+
         /* Hilangkan spinner number input */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button{
@@ -303,7 +306,8 @@
             left:20px;
             top:50%;
             transform:translateY(-50%);
-            pointer-events:none;
+            pointer-events:auto;
+            cursor:pointer;
             z-index:3;
             color:rgba(196,181,253,.65);
             display:flex;
@@ -317,7 +321,7 @@
             filter:drop-shadow(0 0 7px rgba(167,139,250,.6));
         }
 
-        /* beri ruang ke kiri untuk icon, berlaku ke altInput yg dibuat flatpickr */
+        /* beri ruang ke kiri untuk icon kalender */
         .date-wrapper input,
         .date-wrapper .flatpickr-input{
             padding-left:54px !important;
@@ -626,21 +630,22 @@
 
 <script>
 
-    // Flatpickr init — locale Indonesia, altInput biar tampil "29 Mei 2026" ke user
-    // tapi value yang dikirim ke server tetap "Y-m-d" (yang dibutuhkan DB)
+    // Flatpickr init
     const wrapper = document.getElementById('dateWrapper');
 
-    flatpickr("#tanggal", {
+    const fp = flatpickr("#tanggal", {
         locale: "id",
         dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d F Y",
         monthSelectorType: "static",
-        disableMobile: true,
         maxDate: "today",
-        defaultDate: "today",
         onOpen:  function(){ wrapper.classList.add('active'); },
         onClose: function(){ wrapper.classList.remove('active'); }
+    });
+
+    // Klik icon kalender = toggle buka/tutup picker
+    document.querySelector('.date-icon').addEventListener('click', function(e){
+        e.stopPropagation();
+        fp.isOpen ? fp.close() : fp.open();
     });
 
     // Cegah double submit (klik Simpan 2x)
