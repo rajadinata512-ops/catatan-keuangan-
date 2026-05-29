@@ -107,7 +107,7 @@ function togglePassword(id, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.toggle-pw').forEach(btn => btn.innerHTML = eyeOpen);
+    document.querySelectorAll('.toggle-pw').forEach(btn => btn.innerHTML = eyeClosed);
 });
 </script>
 </body>

@@ -234,7 +234,7 @@ function togglePassword(id, btn) {
 // Set initial icon
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.toggle-pw').forEach(btn => {
-        btn.innerHTML = eyeOpen;
+        btn.innerHTML = eyeClosed;
     });
 });
 </script>
