@@ -99,10 +99,10 @@ function togglePassword(id, btn) {
     const input = document.getElementById(id);
     if (input.type === 'password') {
         input.type = 'text';
-        btn.innerHTML = eyeClosed;
+        btn.innerHTML = eyeOpen;
     } else {
         input.type = 'password';
-        btn.innerHTML = eyeOpen;
+        btn.innerHTML = eyeClosed;
     }
 }
 
