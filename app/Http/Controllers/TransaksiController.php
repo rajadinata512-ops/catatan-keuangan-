@@ -18,7 +18,7 @@ class TransaksiController extends Controller
 
         $totalPemasukan   = $transaksis->sum('pemasukan');
         $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->last()->saldo ?? 0;
+        $saldoAkhir       = $transaksis->first()->saldo ?? 0; // latest() = DESC, jadi first() = terbaru
 
         return view('dashboard', [
             'transaksis'       => $transaksis,
@@ -39,7 +39,7 @@ class TransaksiController extends Controller
 
         $totalPemasukan   = $transaksis->sum('pemasukan');
         $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->last()->saldo ?? 0;
+        $saldoAkhir       = $transaksis->first()->saldo ?? 0; // latest() = DESC, jadi first() = terbaru
 
         return view('transaksi.index', [
             'transaksis'       => $transaksis,
@@ -150,10 +150,10 @@ class TransaksiController extends Controller
 
     public function export()
     {
-        $transaksis       = Transaksi::where('user_id', auth()->id())->get();
+        $transaksis       = Transaksi::where('user_id', auth()->id())->orderBy('created_at', 'asc')->get();
         $totalPemasukan   = $transaksis->sum('pemasukan');
         $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->last()->saldo ?? 0;
+        $saldoAkhir       = $transaksis->last()->saldo ?? 0; // ASC order, jadi last() = terbaru
 
         $filename = 'catatan_keuangan.xls';
 
