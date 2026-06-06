@@ -1567,17 +1567,21 @@
     // ========================
     const FILTER_KEY = 'keuangan_filter_v3_realtime';
 
-    const transaksiData = @json($transaksis->map(function($t) {
-        return [
-            'id'          => $t->id,
-            'tanggal'     => \Carbon\Carbon::parse($t->tanggal)->format('Y-m-d'),
-            'bulan'       => \Carbon\Carbon::parse($t->tanggal)->format('m'),
-            'tahun'       => (string) \Carbon\Carbon::parse($t->tanggal)->year,
-            'keterangan'  => strtolower($t->keterangan),
-            'pemasukan'   => (float) $t->pemasukan,
-            'pengeluaran' => (float) $t->pengeluaran,
-        ];
-    })->values());
+    @php
+        $transaksiDataRealtime = $transaksis->map(function($t) {
+            return [
+                'id'          => $t->id,
+                'tanggal'     => \Carbon\Carbon::parse($t->tanggal)->format('Y-m-d'),
+                'bulan'       => \Carbon\Carbon::parse($t->tanggal)->format('m'),
+                'tahun'       => (string) \Carbon\Carbon::parse($t->tanggal)->year,
+                'keterangan'  => strtolower((string) $t->keterangan),
+                'pemasukan'   => (float) ($t->pemasukan ?? 0),
+                'pengeluaran' => (float) ($t->pengeluaran ?? 0),
+            ];
+        })->values();
+    @endphp
+
+    const transaksiData = {!! \Illuminate\Support\Js::from($transaksiDataRealtime) !!};
 
     const totalRows = transaksiData.length;
 
