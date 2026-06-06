@@ -102,7 +102,10 @@
             word-break:break-word;
             overflow-wrap:break-word;
             line-height:1.3;
+            opacity:0;
+            transition:opacity 0.15s ease;
         }
+        .value.loaded{ opacity:1; }
 
         .form-box{
             background:rgba(255,255,255,.03);
@@ -982,25 +985,19 @@
 
         <div class="card income" id="cardIncomeBox">
             <h3>Total Pemasukan</h3>
-            <div class="value" id="cardPemasukan">
-                Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
-            </div>
+            <div class="value" id="cardPemasukan">Rp 0</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
         <div class="card expense" id="cardExpenseBox">
             <h3>Total Pengeluaran</h3>
-            <div class="value" id="cardPengeluaran">
-                Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
-            </div>
+            <div class="value" id="cardPengeluaran">Rp 0</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
         <div class="card balance" id="cardBalanceBox">
             <h3>Saldo Akhir</h3>
-            <div class="value" id="cardSaldo">
-                Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
-            </div>
+            <div class="value" id="cardSaldo">Rp 0</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
@@ -1628,6 +1625,7 @@
 
         // Pop animation — hapus class dulu lalu tambah lagi supaya animasi selalu reset
         [elPemasukan, elPengeluaran, elSaldo].forEach(function(el) {
+            el.classList.add('loaded');
             el.classList.remove('pop');
             void el.offsetWidth; // force reflow
             el.classList.add('pop');
