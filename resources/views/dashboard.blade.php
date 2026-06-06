@@ -1569,7 +1569,7 @@
     // ========================
     // FILTER PERSISTENCE (localStorage)
     // ========================
-    const FILTER_KEY = 'keuangan_filter_v1';
+    const FILTER_KEY = 'keuangan_filter_v2';
 
     function saveFilterState() {
         try {
@@ -1606,42 +1606,54 @@
     }
 
     // ========================
-    // ANIMATED NUMBER COUNTER
+    // ANIMATED NUMBER COUNTER — race-condition safe
+    // Setiap elemen punya satu RAF token; panggilan baru membatalkan yang lama.
     // ========================
-    var _lastVal = {};
+    var _rafId    = {};   // requestAnimationFrame handle per elemen
+    var _lastVal  = {};   // nilai terakhir yang di-set per elemen
 
     function setCardText(el, num) {
         var sign = (el.id === 'cardSaldo' && num < 0) ? '-' : '';
-        el.textContent = sign + 'Rp ' + Math.abs(num).toLocaleString('id-ID');
+        el.textContent = sign + 'Rp ' + Math.abs(Math.round(num)).toLocaleString('id-ID');
     }
 
     function animateCount(el, toNum, duration) {
-        var id      = el.id;
-        var hasLast = (_lastVal[id] !== undefined);
-        var fromNum = hasLast ? _lastVal[id] : null;
+        var id = el.id;
+
+        // Batalkan animasi sebelumnya supaya tidak overwrite nilai baru
+        if (_rafId[id]) {
+            cancelAnimationFrame(_rafId[id]);
+            _rafId[id] = null;
+        }
+
+        var fromNum = (_lastVal[id] !== undefined) ? _lastVal[id] : toNum;
         _lastVal[id] = toNum;
 
-        /* Nilai sama ATAU belum pernah ada — langsung tulis teks, tanpa animasi */
-        if (!hasLast || fromNum === toNum) {
+        // Langsung tulis kalau nilai sama
+        if (fromNum === toNum) {
             setCardText(el, toNum);
             return;
         }
 
-        /* Ada perubahan — animasi pop + count */
+        // Animasi pop + count
         el.classList.remove('pop');
-        void el.offsetWidth; /* reflow agar animasi restart */
+        void el.offsetWidth;
         el.classList.add('pop');
 
         var start = performance.now();
         function step(now) {
-            var p   = Math.min((now - start) / duration, 1);
-            var ease = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
-            var cur = Math.round(fromNum + (toNum - fromNum) * ease);
-            var curSign = (id === 'cardSaldo' && cur < 0) ? '-' : '';
-            el.textContent = curSign + 'Rp ' + Math.abs(cur).toLocaleString('id-ID');
-            if (p < 1) requestAnimationFrame(step);
+            var p    = Math.min((now - start) / duration, 1);
+            var ease = 1 - Math.pow(1 - p, 3);
+            var cur  = fromNum + (toNum - fromNum) * ease;
+            setCardText(el, cur);
+            if (p < 1) {
+                _rafId[id] = requestAnimationFrame(step);
+            } else {
+                _rafId[id] = null;
+                setCardText(el, toNum); // pastikan nilai final tepat
+            }
         }
-        requestAnimationFrame(step);
+        _rafId[id] = requestAnimationFrame(step);
     }
 
     // ========================
@@ -1672,14 +1684,14 @@
     // ========================
     const totalRows = document.querySelectorAll('.transaksi-row').length;
 
-    function formatRp(num) {
-        return 'Rp ' + Math.abs(num).toLocaleString('id-ID');
+    function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     function applyFilters() {
         const search = document.getElementById('searchInput').value.toLowerCase().trim();
-        const bulan  = document.getElementById('filterBulan').value;
-        const tahun  = document.getElementById('filterTahun').value;
+        const bulan  = document.getElementById('filterBulan').value.trim();
+        const tahun  = document.getElementById('filterTahun').value.trim();
 
         saveFilterState();
         updateBadge(bulan, tahun);
@@ -1690,9 +1702,9 @@
         let sumPengeluaran = 0;
 
         rows.forEach(function(row) {
-            const rowBulan    = row.getAttribute('data-bulan');
-            const rowTahun    = row.getAttribute('data-tahun');
-            const rowKet      = row.getAttribute('data-keterangan');
+            const rowBulan = (row.getAttribute('data-bulan') || '').trim();
+            const rowTahun = String(row.getAttribute('data-tahun') || '').trim();
+            const rowKet   = (row.getAttribute('data-keterangan') || '').toLowerCase();
 
             const matchBulan  = !bulan  || rowBulan === bulan;
             const matchTahun  = !tahun  || rowTahun === tahun;
@@ -1705,12 +1717,13 @@
                 sumPengeluaran += parseFloat(row.getAttribute('data-pengeluaran')) || 0;
 
                 const ketCell = row.querySelector('.keterangan-cell');
-                if (search) {
-                    const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
-                    ketCell.innerHTML = row.querySelector('.keterangan-cell').textContent
-                        .replace(regex, '<span class="highlight">$1</span>');
-                } else {
-                    ketCell.innerHTML = ketCell.textContent;
+                if (ketCell) {
+                    if (search) {
+                        const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
+                        ketCell.innerHTML = ketCell.textContent.replace(regex, '<span class="highlight">$1</span>');
+                    } else {
+                        ketCell.textContent = ketCell.textContent;
+                    }
                 }
             } else {
                 row.style.display = 'none';
@@ -1734,32 +1747,33 @@
         }
 
         // ========================
-        // Update kartu summary — animasi & empty state
+        // Update kartu summary — realtime, no stale cache
         // ========================
         const saldo = sumPemasukan - sumPengeluaran;
 
-        // Empty state hanya ditampilkan kalau TIDAK ADA filter aktif DAN tidak ada data sama sekali
+        // Empty-state class hanya saat tidak ada data sama sekali & tidak ada filter
         const noFilterActive = !bulan && !tahun && !search;
-        const isEmpty = visibleCount === 0 && noFilterActive;
+        const isEmpty = (totalRows === 0) || (visibleCount === 0 && noFilterActive);
 
-        ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(id) {
-            const box = document.getElementById(id);
-            if (isEmpty) {
-                box.classList.add('empty-state');
-            } else {
-                box.classList.remove('empty-state');
+        ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(boxId) {
+            const box = document.getElementById(boxId);
+            if (box) {
+                if (isEmpty) {
+                    box.classList.add('empty-state');
+                } else {
+                    box.classList.remove('empty-state');
+                }
             }
         });
 
-        document.getElementById('cardSaldo').style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
+        const cardSaldo = document.getElementById('cardSaldo');
+        if (cardSaldo) {
+            cardSaldo.style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
+        }
 
-        animateCount(document.getElementById('cardPemasukan'),   sumPemasukan,   280);
-        animateCount(document.getElementById('cardPengeluaran'), sumPengeluaran, 280);
-        animateCount(document.getElementById('cardSaldo'),       saldo,          280);
-    }
-
-    function escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        animateCount(document.getElementById('cardPemasukan'),   sumPemasukan,   300);
+        animateCount(document.getElementById('cardPengeluaran'), sumPengeluaran, 300);
+        animateCount(document.getElementById('cardSaldo'),       saldo,          300);
     }
 
     function resetFilters() {
@@ -1768,10 +1782,12 @@
         document.getElementById('filterTahun').value = '';
 
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
-        document.querySelector('.month-tab[data-bulan=""]').classList.add('active');
+        const allMonthTab = document.querySelector('.month-tab[data-bulan=""]');
+        if (allMonthTab) allMonthTab.classList.add('active');
 
         document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
-        document.querySelector('.year-tab[data-tahun=""]').classList.add('active');
+        const allYearTab = document.querySelector('.year-tab[data-tahun=""]');
+        if (allYearTab) allYearTab.classList.add('active');
 
         try { localStorage.removeItem(FILTER_KEY); } catch(e) {}
         applyFilters();
@@ -1791,7 +1807,7 @@
         applyFilters();
     }
 
-    // Sync tab when dropdown changes
+    // Sync tab saat dropdown berubah
     document.getElementById('filterBulan').addEventListener('change', function() {
         const val = this.value;
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -1809,11 +1825,12 @@
     });
 
     // ========================
-    // INIT: restore filter & apply on page load
+    // INIT: restore filter → apply
+    // _lastVal dikosongkan dulu agar animateCount membaca dari nilai 0,
+    // sehingga animasi selalu jalan dari 0 ke nilai filter pertama kali.
     // ========================
-    /* Reset cache agar animateCount pasti menulis teks baru,
-       bukan nilai lama yang di-render server */
     _lastVal = {};
+    _rafId   = {};
     restoreFilterState();
     applyFilters();
 
