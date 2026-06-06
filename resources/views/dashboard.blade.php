@@ -982,19 +982,19 @@
 
         <div class="card income" id="cardIncomeBox">
             <h3>Total Pemasukan</h3>
-            <div class="value" id="cardPemasukan">Rp 0</div>
+            <div class="value" id="cardPemasukan">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
         <div class="card expense" id="cardExpenseBox">
             <h3>Total Pengeluaran</h3>
-            <div class="value" id="cardPengeluaran">Rp 0</div>
+            <div class="value" id="cardPengeluaran">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
         <div class="card balance" id="cardBalanceBox">
             <h3>Saldo Akhir</h3>
-            <div class="value" id="cardSaldo">Rp 0</div>
+            <div class="value" id="cardSaldo">Rp {{ number_format($saldoAkhir, 0, ',', '.') }}</div>
             <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
@@ -1561,17 +1561,48 @@
     });
 
     // ========================
-    // FILTER PERSISTENCE (localStorage)
+    // FILTER REALTIME UNTUK CARD + RIWAYAT
+    // Sumber angka dibuat dari data transaksi, bukan dari tampilan row.
+    // Jadi setelah klik April/Mei/Juni, card langsung berubah tanpa refresh.
     // ========================
-    const FILTER_KEY = 'keuangan_filter_v2';
+    const FILTER_KEY = 'keuangan_filter_v3_realtime';
+
+    const transaksiData = @json($transaksis->map(function($t) {
+        return [
+            'id'          => $t->id,
+            'tanggal'     => \Carbon\Carbon::parse($t->tanggal)->format('Y-m-d'),
+            'bulan'       => \Carbon\Carbon::parse($t->tanggal)->format('m'),
+            'tahun'       => (string) \Carbon\Carbon::parse($t->tanggal)->year,
+            'keterangan'  => strtolower($t->keterangan),
+            'pemasukan'   => (float) $t->pemasukan,
+            'pengeluaran' => (float) $t->pengeluaran,
+        ];
+    })->values());
+
+    const totalRows = transaksiData.length;
+
+    var BULAN_LABEL = {
+        '01':'Januari','02':'Februari','03':'Maret','04':'April',
+        '05':'Mei','06':'Juni','07':'Juli','08':'Agustus',
+        '09':'September','10':'Oktober','11':'November','12':'Desember'
+    };
+
+    function getEl(id) {
+        return document.getElementById(id);
+    }
+
+    function getFilterValue() {
+        return {
+            search: (getEl('searchInput')?.value || '').toLowerCase().trim(),
+            bulan:  (getEl('filterBulan')?.value || '').trim(),
+            tahun:  (getEl('filterTahun')?.value || '').trim()
+        };
+    }
 
     function saveFilterState() {
+        const f = getFilterValue();
         try {
-            localStorage.setItem(FILTER_KEY, JSON.stringify({
-                bulan:  document.getElementById('filterBulan').value,
-                tahun:  document.getElementById('filterTahun').value,
-                search: document.getElementById('searchInput').value
-            }));
+            localStorage.setItem(FILTER_KEY, JSON.stringify(f));
         } catch(e) {}
     }
 
@@ -1579,70 +1610,60 @@
         try {
             const saved = localStorage.getItem(FILTER_KEY);
             if (!saved) return;
+
             const state = JSON.parse(saved);
 
-            if (state.bulan) {
-                document.getElementById('filterBulan').value = state.bulan;
-                document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
-                const mt = document.querySelector('.month-tab[data-bulan="' + state.bulan + '"]');
-                if (mt) mt.classList.add('active');
-            }
-            if (state.tahun) {
-                document.getElementById('filterTahun').value = state.tahun;
-                document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
-                const yt = document.querySelector('.year-tab[data-tahun="' + state.tahun + '"]');
-                if (yt) yt.classList.add('active');
-            }
-            if (state.search) {
-                document.getElementById('searchInput').value = state.search;
-            }
+            if (state.bulan !== undefined) getEl('filterBulan').value = state.bulan;
+            if (state.tahun !== undefined) getEl('filterTahun').value = state.tahun;
+            if (state.search !== undefined) getEl('searchInput').value = state.search;
+
+            syncMonthTab(state.bulan || '');
+            syncYearTab(state.tahun || '');
         } catch(e) {}
     }
 
-    // ========================
-    // UPDATE KARTU — langsung & sinkron, tanpa RAF
-    // ========================
     function formatRupiah(n) {
+        n = Number(n) || 0;
         return 'Rp ' + Math.abs(Math.round(n)).toLocaleString('id-ID');
     }
 
-    function updateCards(sumPemasukan, sumPengeluaran) {
-        var saldo         = sumPemasukan - sumPengeluaran;
-        var elPemasukan   = document.getElementById('cardPemasukan');
-        var elPengeluaran = document.getElementById('cardPengeluaran');
-        var elSaldo       = document.getElementById('cardSaldo');
+    function updateCards(sumPemasukan, sumPengeluaran, visibleCount) {
+        const saldo = sumPemasukan - sumPengeluaran;
+
+        const elPemasukan   = getEl('cardPemasukan');
+        const elPengeluaran = getEl('cardPengeluaran');
+        const elSaldo       = getEl('cardSaldo');
 
         if (!elPemasukan || !elPengeluaran || !elSaldo) return;
 
-        // Tulis langsung — tidak pakai RAF, jadi pasti langsung tampil
         elPemasukan.textContent   = formatRupiah(sumPemasukan);
         elPengeluaran.textContent = formatRupiah(sumPengeluaran);
         elSaldo.textContent       = (saldo < 0 ? '-' : '') + formatRupiah(saldo);
         elSaldo.style.color       = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
 
-        // Pop animation — hapus class dulu lalu tambah lagi supaya animasi selalu reset
+        const isEmpty = visibleCount === 0;
+        ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(boxId) {
+            const box = getEl(boxId);
+            if (!box) return;
+            box.classList.toggle('empty-state', isEmpty);
+        });
+
         [elPemasukan, elPengeluaran, elSaldo].forEach(function(el) {
             el.classList.remove('pop');
-            void el.offsetWidth; // force reflow
+            void el.offsetWidth;
             el.classList.add('pop');
         });
     }
 
-    // ========================
-    // BADGE FILTER AKTIF
-    // ========================
-    var BULAN_LABEL = {
-        '01':'Januari','02':'Februari','03':'Maret','04':'April',
-        '05':'Mei','06':'Juni','07':'Juli','08':'Agustus',
-        '09':'September','10':'Oktober','11':'November','12':'Desember'
-    };
-
     function updateBadge(bulan, tahun) {
-        var badge = document.getElementById('activeFilterBadge');
-        var text  = document.getElementById('activeBadgeText');
-        var parts = [];
+        const badge = getEl('activeFilterBadge');
+        const text  = getEl('activeBadgeText');
+        if (!badge || !text) return;
+
+        const parts = [];
         if (bulan) parts.push(BULAN_LABEL[bulan] || bulan);
         if (tahun) parts.push(tahun);
+
         if (parts.length) {
             text.textContent = 'Menampilkan: ' + parts.join(' ');
             badge.classList.add('visible');
@@ -1651,153 +1672,156 @@
         }
     }
 
-    // ========================
-    // FILTER & SEARCH LOGIC
-    // ========================
-    const totalRows = document.querySelectorAll('.transaksi-row').length;
-
     function escapeRegex(str) {
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    function applyFilters() {
-        const search = document.getElementById('searchInput').value.toLowerCase().trim();
-        const bulan  = document.getElementById('filterBulan').value.trim();
-        const tahun  = document.getElementById('filterTahun').value.trim();
+    function matchTransaksi(item, filter) {
+        const matchBulan  = !filter.bulan  || item.bulan === filter.bulan;
+        const matchTahun  = !filter.tahun  || item.tahun === filter.tahun;
+        const matchSearch = !filter.search || item.keterangan.includes(filter.search);
+        return matchBulan && matchTahun && matchSearch;
+    }
 
-        saveFilterState();
-        updateBadge(bulan, tahun);
-
+    function updateTableRows(filter) {
         const rows = document.querySelectorAll('.transaksi-row');
-        let visibleCount   = 0;
-        let sumPemasukan   = 0;
-        let sumPengeluaran = 0;
+        let visibleCount = 0;
 
         rows.forEach(function(row) {
             const rowBulan = (row.getAttribute('data-bulan') || '').trim();
             const rowTahun = String(row.getAttribute('data-tahun') || '').trim();
             const rowKet   = (row.getAttribute('data-keterangan') || '').toLowerCase();
 
-            const matchBulan  = !bulan  || rowBulan === bulan;
-            const matchTahun  = !tahun  || rowTahun === tahun;
-            const matchSearch = !search || rowKet.includes(search);
+            const show = (!filter.bulan  || rowBulan === filter.bulan) &&
+                         (!filter.tahun  || rowTahun === filter.tahun) &&
+                         (!filter.search || rowKet.includes(filter.search));
 
-            if (matchBulan && matchTahun && matchSearch) {
-                row.style.display = '';
+            row.style.display = show ? '' : 'none';
+
+            if (show) {
                 visibleCount++;
-                sumPemasukan   += parseFloat(row.getAttribute('data-pemasukan'))   || 0;
-                sumPengeluaran += parseFloat(row.getAttribute('data-pengeluaran')) || 0;
 
                 const ketCell = row.querySelector('.keterangan-cell');
                 if (ketCell) {
-                    if (search) {
-                        const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
-                        ketCell.innerHTML = ketCell.textContent.replace(regex, '<span class="highlight">$1</span>');
+                    const originalText = ketCell.textContent;
+                    if (filter.search) {
+                        const regex = new RegExp('(' + escapeRegex(filter.search) + ')', 'gi');
+                        ketCell.innerHTML = originalText.replace(regex, '<span class="highlight">$1</span>');
                     } else {
-                        ketCell.textContent = ketCell.textContent;
+                        ketCell.textContent = originalText;
                     }
                 }
-            } else {
-                row.style.display = 'none';
             }
         });
 
-        // Update count display
-        document.getElementById('countShown').textContent = visibleCount;
-        document.getElementById('resultCount').innerHTML =
-            'Menampilkan <span>' + visibleCount + '</span> dari ' + totalRows + ' transaksi';
+        return visibleCount;
+    }
 
-        // Empty state tabel
-        const filterEmpty = document.getElementById('filterEmptyState');
-        const tableBody   = document.getElementById('tableBody');
-        if (visibleCount === 0 && totalRows > 0) {
-            filterEmpty.style.display = 'block';
-            tableBody.style.display   = 'none';
-        } else {
-            filterEmpty.style.display = 'none';
-            tableBody.style.display   = '';
+    function calculateSummary(filter) {
+        let visibleCount = 0;
+        let sumPemasukan = 0;
+        let sumPengeluaran = 0;
+
+        transaksiData.forEach(function(item) {
+            if (!matchTransaksi(item, filter)) return;
+            visibleCount++;
+            sumPemasukan += Number(item.pemasukan) || 0;
+            sumPengeluaran += Number(item.pengeluaran) || 0;
+        });
+
+        return { visibleCount, sumPemasukan, sumPengeluaran };
+    }
+
+    function applyFilters() {
+        const filter = getFilterValue();
+
+        saveFilterState();
+        updateBadge(filter.bulan, filter.tahun);
+
+        const shownFromRows = updateTableRows(filter);
+        const summary = calculateSummary(filter);
+
+        const visibleCount = summary.visibleCount;
+
+        const countShown = getEl('countShown');
+        if (countShown) countShown.textContent = visibleCount;
+
+        const resultCount = getEl('resultCount');
+        if (resultCount) {
+            resultCount.innerHTML = 'Menampilkan <span>' + visibleCount + '</span> dari ' + totalRows + ' transaksi';
         }
 
-        // ========================
-        // Update kartu summary — realtime, no stale cache
-        // ========================
-        const saldo = sumPemasukan - sumPengeluaran;
+        const filterEmpty = getEl('filterEmptyState');
+        const tableBody   = getEl('tableBody');
 
-        // Empty-state class hanya saat tidak ada data sama sekali & tidak ada filter
-        const noFilterActive = !bulan && !tahun && !search;
-        const isEmpty = (totalRows === 0) || (visibleCount === 0 && noFilterActive);
-
-        ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(boxId) {
-            const box = document.getElementById(boxId);
-            if (box) {
-                if (isEmpty) {
-                    box.classList.add('empty-state');
-                } else {
-                    box.classList.remove('empty-state');
-                }
+        if (filterEmpty && tableBody) {
+            if (visibleCount === 0 && totalRows > 0) {
+                filterEmpty.style.display = 'block';
+                tableBody.style.display   = 'none';
+            } else {
+                filterEmpty.style.display = 'none';
+                tableBody.style.display   = '';
             }
-        });
+        }
 
-        // Update kartu langsung
-        updateCards(sumPemasukan, sumPengeluaran);
+        updateCards(summary.sumPemasukan, summary.sumPengeluaran, visibleCount);
+    }
+
+    function syncMonthTab(value) {
+        document.querySelectorAll('.month-tab').forEach(function(t){
+            t.classList.toggle('active', t.getAttribute('data-bulan') === value);
+        });
+    }
+
+    function syncYearTab(value) {
+        document.querySelectorAll('.year-tab').forEach(function(t){
+            t.classList.toggle('active', t.getAttribute('data-tahun') === value);
+        });
     }
 
     function resetFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('filterBulan').value = '';
-        document.getElementById('filterTahun').value = '';
+        getEl('searchInput').value = '';
+        getEl('filterBulan').value = '';
+        getEl('filterTahun').value = '';
 
-        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
-        const allMonthTab = document.querySelector('.month-tab[data-bulan=""]');
-        if (allMonthTab) allMonthTab.classList.add('active');
-
-        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
-        const allYearTab = document.querySelector('.year-tab[data-tahun=""]');
-        if (allYearTab) allYearTab.classList.add('active');
+        syncMonthTab('');
+        syncYearTab('');
 
         try { localStorage.removeItem(FILTER_KEY); } catch(e) {}
         applyFilters();
     }
 
     function setMonthTab(el) {
-        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
-        el.classList.add('active');
-        document.getElementById('filterBulan').value = el.getAttribute('data-bulan');
+        const value = el.getAttribute('data-bulan') || '';
+        getEl('filterBulan').value = value;
+        syncMonthTab(value);
         applyFilters();
     }
 
     function setYearTab(el) {
-        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
-        el.classList.add('active');
-        document.getElementById('filterTahun').value = el.getAttribute('data-tahun');
+        const value = el.getAttribute('data-tahun') || '';
+        getEl('filterTahun').value = value;
+        syncYearTab(value);
         applyFilters();
     }
 
-    // Sync tab saat dropdown berubah
-    document.getElementById('filterBulan').addEventListener('change', function() {
-        const val = this.value;
-        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
-        const activeTab = document.querySelector('.month-tab[data-bulan="' + val + '"]');
-        if (activeTab) activeTab.classList.add('active');
+    getEl('filterBulan').addEventListener('change', function() {
+        syncMonthTab(this.value || '');
         applyFilters();
     });
 
-    document.getElementById('filterTahun').addEventListener('change', function() {
-        const val = this.value;
-        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
-        const activeTab = document.querySelector('.year-tab[data-tahun="' + val + '"]');
-        if (activeTab) activeTab.classList.add('active');
+    getEl('filterTahun').addEventListener('change', function() {
+        syncYearTab(this.value || '');
         applyFilters();
     });
 
-    // ========================
-    // INIT: restore filter → apply
-    // ========================
-    // INIT — dijamin setelah DOM siap
+    getEl('searchInput').addEventListener('input', applyFilters);
+
     function initApp() {
         restoreFilterState();
         applyFilters();
     }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initApp);
     } else {
