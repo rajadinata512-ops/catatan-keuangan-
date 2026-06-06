@@ -119,7 +119,7 @@
             gap:18px;
         }
 
-        input{
+        input, select{
             width:100%;
             height:70px;
             border:none;
@@ -132,7 +132,22 @@
             border:1px solid rgba(255,255,255,.06);
         }
 
-        input:focus{
+        select{
+            cursor:pointer;
+            appearance:none;
+            -webkit-appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 18px center;
+            padding-right:48px;
+        }
+
+        select option{
+            background:#0f0a1e;
+            color:white;
+        }
+
+        input:focus, select:focus{
             border:1px solid #8b5cf6;
             box-shadow:0 0 25px rgba(139,92,246,.25);
         }
@@ -398,6 +413,196 @@
         }
 
         /* ========================
+           FILTER & SEARCH BAR
+        ======================== */
+        .filter-section{
+            background:rgba(255,255,255,.025);
+            border:1px solid rgba(255,255,255,.07);
+            backdrop-filter:blur(18px);
+            border-radius:28px;
+            padding:22px 28px;
+            margin-bottom:28px;
+        }
+
+        .filter-label{
+            font-size:13px;
+            color:#7c3aed;
+            font-weight:600;
+            letter-spacing:.06em;
+            text-transform:uppercase;
+            margin-bottom:14px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        .filter-label svg{
+            color:#a78bfa;
+        }
+
+        .filter-grid{
+            display:grid;
+            grid-template-columns:2fr 1fr 1fr auto;
+            gap:14px;
+            align-items:center;
+        }
+
+        .search-wrapper{
+            position:relative;
+            display:flex;
+            align-items:center;
+        }
+
+        .search-icon{
+            position:absolute;
+            left:20px;
+            top:50%;
+            transform:translateY(-50%);
+            pointer-events:none;
+            z-index:3;
+            color:rgba(196,181,253,.6);
+            display:flex;
+            align-items:center;
+        }
+
+        .search-wrapper input{
+            padding-left:52px !important;
+            height:58px;
+            font-size:17px;
+        }
+
+        .filter-grid select{
+            height:58px;
+            font-size:17px;
+        }
+
+        .reset-filter-btn{
+            height:58px;
+            padding:0 22px;
+            background:rgba(139,92,246,.1);
+            border:1px solid rgba(139,92,246,.25);
+            color:#a78bfa;
+            border-radius:18px;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+            transition:.2s ease;
+            white-space:nowrap;
+        }
+
+        .reset-filter-btn:hover{
+            background:rgba(139,92,246,.2);
+            transform:translateY(-1px);
+        }
+
+        /* Tab bulan */
+        .month-tabs-wrapper{
+            margin-bottom:22px;
+        }
+
+        .month-tabs-label{
+            font-size:13px;
+            color:#6b7280;
+            font-weight:500;
+            margin-bottom:10px;
+        }
+
+        .month-tabs{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .month-tab{
+            padding:8px 18px;
+            border-radius:50px;
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.08);
+            color:#9ca3af;
+            font-size:14px;
+            font-weight:500;
+            cursor:pointer;
+            transition:.2s ease;
+            user-select:none;
+        }
+
+        .month-tab:hover{
+            background:rgba(139,92,246,.12);
+            border-color:rgba(139,92,246,.3);
+            color:#c4b5fd;
+        }
+
+        .month-tab.active{
+            background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(168,85,247,.3));
+            border-color:rgba(139,92,246,.5);
+            color:#e9d5ff;
+            font-weight:600;
+        }
+
+        /* Tahun selector */
+        .year-tabs{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .year-tab{
+            padding:8px 18px;
+            border-radius:50px;
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.08);
+            color:#9ca3af;
+            font-size:14px;
+            font-weight:500;
+            cursor:pointer;
+            transition:.2s ease;
+            user-select:none;
+        }
+
+        .year-tab:hover{
+            background:rgba(99,102,241,.12);
+            border-color:rgba(99,102,241,.3);
+            color:#a5b4fc;
+        }
+
+        .year-tab.active{
+            background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(79,70,229,.3));
+            border-color:rgba(99,102,241,.5);
+            color:#c7d2fe;
+            font-weight:600;
+        }
+
+        /* Count badge */
+        .result-count{
+            font-size:13px;
+            color:#6b7280;
+            margin-top:18px;
+            padding-top:14px;
+            border-top:1px solid rgba(255,255,255,.05);
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+
+        .result-count span{
+            background:rgba(139,92,246,.15);
+            border:1px solid rgba(139,92,246,.2);
+            color:#a78bfa;
+            font-weight:600;
+            font-size:12px;
+            padding:3px 10px;
+            border-radius:50px;
+        }
+
+        /* Highlight search match */
+        .highlight{
+            background:rgba(168,85,247,.25);
+            border-radius:4px;
+            padding:0 2px;
+            color:#e9d5ff;
+        }
+
+        /* ========================
            ACTION BUTTONS PER ROW
         ======================== */
         .row-actions{
@@ -644,7 +849,7 @@
             .value{ font-size:clamp(16px,5vw,36px); }
             .form-box{ padding:20px; border-radius:24px; }
             .form-grid{ grid-template-columns:1fr; gap:16px; }
-            input{ height:65px; font-size:18px; }
+            input, select{ height:65px; font-size:18px; }
             .save-btn{ width:100%; height:65px; font-size:18px; }
             .table-box::-webkit-scrollbar{ height:6px; }
             .table-box::-webkit-scrollbar-thumb{ background:rgba(139,92,246,.4); border-radius:20px; }
@@ -652,6 +857,11 @@
             th, td{ font-size:15px; padding:18px 14px; }
             footer{ font-size:15px; line-height:1.7; padding:40px 0 20px; }
             .modal-grid{ grid-template-columns:1fr; }
+            .filter-grid{ grid-template-columns:1fr 1fr; gap:10px; }
+            .filter-grid .search-wrapper{ grid-column:1/-1; }
+            .filter-grid .reset-filter-btn{ grid-column:1/-1; width:100%; }
+            .search-wrapper input{ height:58px; }
+            .filter-grid select{ height:58px; }
         }
 
         @media(max-width:500px){
@@ -660,6 +870,7 @@
             .card{ padding:24px; }
             .table-box{ border-radius:22px; }
             .modal-box{ padding:24px; }
+            .filter-grid{ grid-template-columns:1fr; }
         }
 
     </style>
@@ -696,21 +907,21 @@
 
         <div class="card income">
             <h3>Total Pemasukan</h3>
-            <div class="value">
+            <div class="value" id="cardPemasukan">
                 Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
             </div>
         </div>
 
         <div class="card expense">
             <h3>Total Pengeluaran</h3>
-            <div class="value">
+            <div class="value" id="cardPengeluaran">
                 Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
             </div>
         </div>
 
         <div class="card balance">
             <h3>Saldo Akhir</h3>
-            <div class="value">
+            <div class="value" id="cardSaldo">
                 Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
             </div>
         </div>
@@ -822,10 +1033,112 @@
 
     </div>
 
+    <!-- ========================
+         FILTER & SEARCH SECTION
+    ======================== -->
+    <div class="filter-section">
+
+        <div class="filter-label">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            Filter & Cari Transaksi
+        </div>
+
+        <!-- Search + Bulan + Tahun -->
+        <div class="filter-grid">
+
+            <div class="search-wrapper">
+                <span class="search-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </span>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Cari keterangan transaksi..."
+                    oninput="applyFilters()"
+                    autocomplete="off"
+                >
+            </div>
+
+            <select id="filterBulan" onchange="applyFilters()">
+                <option value="">Semua Bulan</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+            </select>
+
+            <select id="filterTahun" onchange="applyFilters()">
+                <option value="">Semua Tahun</option>
+                {{-- Tahun dinamis dari data transaksi --}}
+                @php
+                    $years = $transaksis->map(fn($t) => \Carbon\Carbon::parse($t->tanggal)->year)->unique()->sortDesc();
+                @endphp
+                @foreach($years as $year)
+                    <option value="{{ $year }}">{{ $year }}</option>
+                @endforeach
+            </select>
+
+            <button class="reset-filter-btn" onclick="resetFilters()">
+                ✕ Reset
+            </button>
+
+        </div>
+
+        <!-- Tab Bulan Cepat -->
+        <div style="margin-top:18px;">
+            <div class="month-tabs-label">Pilih cepat bulan:</div>
+            <div class="month-tabs" id="monthTabs">
+                <div class="month-tab active" data-bulan="" onclick="setMonthTab(this)">Semua</div>
+                <div class="month-tab" data-bulan="01" onclick="setMonthTab(this)">Jan</div>
+                <div class="month-tab" data-bulan="02" onclick="setMonthTab(this)">Feb</div>
+                <div class="month-tab" data-bulan="03" onclick="setMonthTab(this)">Mar</div>
+                <div class="month-tab" data-bulan="04" onclick="setMonthTab(this)">Apr</div>
+                <div class="month-tab" data-bulan="05" onclick="setMonthTab(this)">Mei</div>
+                <div class="month-tab" data-bulan="06" onclick="setMonthTab(this)">Jun</div>
+                <div class="month-tab" data-bulan="07" onclick="setMonthTab(this)">Jul</div>
+                <div class="month-tab" data-bulan="08" onclick="setMonthTab(this)">Agu</div>
+                <div class="month-tab" data-bulan="09" onclick="setMonthTab(this)">Sep</div>
+                <div class="month-tab" data-bulan="10" onclick="setMonthTab(this)">Okt</div>
+                <div class="month-tab" data-bulan="11" onclick="setMonthTab(this)">Nov</div>
+                <div class="month-tab" data-bulan="12" onclick="setMonthTab(this)">Des</div>
+            </div>
+        </div>
+
+        <!-- Tab Tahun Cepat -->
+        <div style="margin-top:14px;">
+            <div class="month-tabs-label">Pilih cepat tahun:</div>
+            <div class="year-tabs" id="yearTabs">
+                <div class="year-tab active" data-tahun="" onclick="setYearTab(this)">Semua</div>
+                @foreach($years as $year)
+                    <div class="year-tab" data-tahun="{{ $year }}" onclick="setYearTab(this)">{{ $year }}</div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Hasil -->
+        <div class="result-count" id="resultCount">
+            Menampilkan <span id="countShown">{{ $transaksis->count() }}</span> dari {{ $transaksis->count() }} transaksi
+        </div>
+
+    </div>
+
     <!-- TABLE -->
     <div class="table-box">
 
-        <table>
+        <table id="mainTable">
             <thead>
                 <tr>
                     <th>Tanggal</th>
@@ -836,12 +1149,21 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
 
                 @forelse ($transaksis as $transaksi)
-                <tr>
+                <tr
+                    class="transaksi-row"
+                    data-tanggal="{{ $transaksi->tanggal }}"
+                    data-bulan="{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('m') }}"
+                    data-tahun="{{ \Carbon\Carbon::parse($transaksi->tanggal)->year }}"
+                    data-keterangan="{{ strtolower($transaksi->keterangan) }}"
+                    data-pemasukan="{{ $transaksi->pemasukan }}"
+                    data-pengeluaran="{{ $transaksi->pengeluaran }}"
+                    data-saldo="{{ $transaksi->saldo }}"
+                >
                     <td>{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d/m/Y') }}</td>
-                    <td>{{ $transaksi->keterangan }}</td>
+                    <td class="keterangan-cell">{{ $transaksi->keterangan }}</td>
                     <td class="income-text">
                         Rp {{ number_format($transaksi->pemasukan, 0, ',', '.') }}
                     </td>
@@ -883,7 +1205,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr>
+                <tr id="emptyRow">
                     <td colspan="6" class="empty-state">
                         Belum ada transaksi. Yuk catat pengeluaran pertama kamu!
                     </td>
@@ -892,6 +1214,11 @@
 
             </tbody>
         </table>
+
+        <!-- Empty state saat filter kosong -->
+        <div id="filterEmptyState" style="display:none; text-align:center; padding:40px 20px; color:#6b7280; font-size:16px;">
+            🔍 Tidak ada transaksi yang cocok dengan filter ini.
+        </div>
 
     </div>
 
@@ -1097,22 +1424,18 @@
     // Buka / tutup modal edit
     // ========================
     function openEditModal(id, tanggal, keterangan, pemasukan, pengeluaran) {
-        // Set action form ke route update
         const form = document.getElementById('formEdit');
         form.action = '/transaksi/' + id;
 
-        // Isi field
         fpEdit.setDate(tanggal, true);
         document.getElementById('editKeterangan').value  = keterangan;
         document.getElementById('editPemasukan').value   = pemasukan  > 0 ? pemasukan  : '';
         document.getElementById('editPengeluaran').value = pengeluaran > 0 ? pengeluaran : '';
 
-        // Reset tombol
         const btn = document.getElementById('btnUpdate');
         btn.disabled = false;
         btn.textContent = 'Simpan Perubahan';
 
-        // Tampilkan
         document.getElementById('editModal').classList.add('open');
         document.body.style.overflow = 'hidden';
     }
@@ -1122,17 +1445,14 @@
         document.body.style.overflow = '';
     }
 
-    // Klik backdrop = tutup modal
     document.getElementById('editModal').addEventListener('click', function(e){
         if (e.target === this) closeEditModal();
     });
 
-    // ESC = tutup modal
     document.addEventListener('keydown', function(e){
         if (e.key === 'Escape') closeEditModal();
     });
 
-    // Validasi + disable double submit pada form edit
     document.getElementById('formEdit').addEventListener('submit', function(e) {
         const pemasukan   = parseFloat(document.getElementById('editPemasukan').value)   || 0;
         const pengeluaran = parseFloat(document.getElementById('editPengeluaran').value) || 0;
@@ -1166,6 +1486,132 @@
         const btn = document.getElementById('btnUpdate');
         btn.disabled = true;
         btn.textContent = 'Menyimpan...';
+    });
+
+    // ========================
+    // FILTER & SEARCH LOGIC
+    // ========================
+    const totalRows = document.querySelectorAll('.transaksi-row').length;
+
+    function formatRp(num) {
+        return 'Rp ' + Math.abs(num).toLocaleString('id-ID');
+    }
+
+    function applyFilters() {
+        const search   = document.getElementById('searchInput').value.toLowerCase().trim();
+        const bulan    = document.getElementById('filterBulan').value;
+        const tahun    = document.getElementById('filterTahun').value;
+
+        const rows = document.querySelectorAll('.transaksi-row');
+        let visibleCount = 0;
+        let sumPemasukan   = 0;
+        let sumPengeluaran = 0;
+
+        rows.forEach(function(row) {
+            const rowBulan    = row.getAttribute('data-bulan');
+            const rowTahun    = row.getAttribute('data-tahun');
+            const rowKet      = row.getAttribute('data-keterangan');
+
+            const matchBulan  = !bulan || rowBulan === bulan;
+            const matchTahun  = !tahun || rowTahun === tahun;
+            const matchSearch = !search || rowKet.includes(search);
+
+            if (matchBulan && matchTahun && matchSearch) {
+                row.style.display = '';
+                visibleCount++;
+                sumPemasukan   += parseFloat(row.getAttribute('data-pemasukan')) || 0;
+                sumPengeluaran += parseFloat(row.getAttribute('data-pengeluaran')) || 0;
+
+                // Highlight search
+                const ketCell = row.querySelector('.keterangan-cell');
+                if (search) {
+                    const originalText = row.getAttribute('data-keterangan');
+                    const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
+                    ketCell.innerHTML = row.querySelector('.keterangan-cell').textContent.replace(regex, '<span class="highlight">$1</span>');
+                } else {
+                    ketCell.innerHTML = ketCell.textContent;
+                }
+
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update count
+        document.getElementById('countShown').textContent = visibleCount;
+        document.getElementById('resultCount').innerHTML =
+            'Menampilkan <span>' + visibleCount + '</span> dari ' + totalRows + ' transaksi';
+
+        // Empty state
+        const filterEmpty = document.getElementById('filterEmptyState');
+        const tableBody   = document.getElementById('tableBody');
+        if (visibleCount === 0 && totalRows > 0) {
+            filterEmpty.style.display = 'block';
+            tableBody.style.display   = 'none';
+        } else {
+            filterEmpty.style.display = 'none';
+            tableBody.style.display   = '';
+        }
+
+        // Update summary cards based on filtered data
+        const saldo = sumPemasukan - sumPengeluaran;
+        document.getElementById('cardPemasukan').textContent   = formatRp(sumPemasukan);
+        document.getElementById('cardPengeluaran').textContent = formatRp(sumPengeluaran);
+        document.getElementById('cardSaldo').textContent       = (saldo < 0 ? '-' : '') + formatRp(saldo);
+        document.getElementById('cardSaldo').style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
+    }
+
+    function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value   = '';
+        document.getElementById('filterBulan').value   = '';
+        document.getElementById('filterTahun').value   = '';
+
+        // Reset tab bulan
+        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelector('.month-tab[data-bulan=""]').classList.add('active');
+
+        // Reset tab tahun
+        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelector('.year-tab[data-tahun=""]').classList.add('active');
+
+        applyFilters();
+    }
+
+    function setMonthTab(el) {
+        // Update active tab
+        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
+        el.classList.add('active');
+
+        // Sync dropdown
+        document.getElementById('filterBulan').value = el.getAttribute('data-bulan');
+        applyFilters();
+    }
+
+    function setYearTab(el) {
+        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
+        el.classList.add('active');
+
+        document.getElementById('filterTahun').value = el.getAttribute('data-tahun');
+        applyFilters();
+    }
+
+    // Sync tab when dropdown changes
+    document.getElementById('filterBulan').addEventListener('change', function() {
+        const val = this.value;
+        document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
+        const activeTab = document.querySelector('.month-tab[data-bulan="' + val + '"]');
+        if (activeTab) activeTab.classList.add('active');
+    });
+
+    document.getElementById('filterTahun').addEventListener('change', function() {
+        const val = this.value;
+        document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
+        const activeTab = document.querySelector('.year-tab[data-tahun="' + val + '"]');
+        if (activeTab) activeTab.classList.add('active');
     });
 
 </script>
