@@ -873,6 +873,77 @@
             .filter-grid{ grid-template-columns:1fr; }
         }
 
+        /* ========================
+           ANIMASI & RESPONSIVE CARDS
+        ======================== */
+        .value{
+            transition:color .3s ease;
+        }
+
+        /* Flash animation saat nilai berubah */
+        @keyframes valuePop{
+            0%  { transform:scale(1);    opacity:1; }
+            30% { transform:scale(1.05); opacity:.7; }
+            100%{ transform:scale(1);    opacity:1; }
+        }
+        .value.pop{
+            animation:valuePop .28s ease;
+        }
+
+        /* State kosong: bulan tidak ada transaksi */
+        .card.empty-state{
+            opacity:.55;
+            transition:opacity .35s ease;
+        }
+        .card.empty-state .value{
+            font-size:clamp(20px,2.5vw,38px) !important;
+        }
+        .card-empty-label{
+            font-size:11px;
+            color:#6b7280;
+            margin-top:8px;
+            display:none;
+            letter-spacing:.4px;
+            text-transform:uppercase;
+        }
+        .card.empty-state .card-empty-label{
+            display:block;
+        }
+
+        /* Pill label bulan aktif di atas kartu */
+        .active-filter-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            font-size:13px;
+            color:#a78bfa;
+            background:rgba(139,92,246,.12);
+            border:1px solid rgba(139,92,246,.2);
+            border-radius:50px;
+            padding:5px 14px;
+            margin-bottom:18px;
+            opacity:0;
+            transform:translateY(-6px);
+            transition:opacity .3s, transform .3s;
+            pointer-events:none;
+            user-select:none;
+        }
+        .active-filter-badge.visible{
+            opacity:1;
+            transform:translateY(0);
+        }
+        .active-filter-badge svg{
+            flex-shrink:0;
+        }
+
+        /* Smooth card grid pada ukuran medium */
+        @media(min-width:501px) and (max-width:900px){
+            .cards{ grid-template-columns:1fr !important; }
+        }
+        @media(min-width:901px){
+            .cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+        }
+
     </style>
 </head>
 <body>
@@ -903,27 +974,34 @@
     </div>
 
     <!-- CARDS -->
+    <div id="activeFilterBadge" class="active-filter-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span id="activeBadgeText">Filter aktif</span>
+    </div>
     <div class="cards">
 
-        <div class="card income">
+        <div class="card income" id="cardIncomeBox">
             <h3>Total Pemasukan</h3>
             <div class="value" id="cardPemasukan">
                 Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
             </div>
+            <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
-        <div class="card expense">
+        <div class="card expense" id="cardExpenseBox">
             <h3>Total Pengeluaran</h3>
             <div class="value" id="cardPengeluaran">
                 Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
             </div>
+            <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
-        <div class="card balance">
+        <div class="card balance" id="cardBalanceBox">
             <h3>Saldo Akhir</h3>
             <div class="value" id="cardSaldo">
                 Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
             </div>
+            <div class="card-empty-label">Tidak ada transaksi</div>
         </div>
 
     </div>
@@ -1489,6 +1567,95 @@
     });
 
     // ========================
+    // FILTER PERSISTENCE (localStorage)
+    // ========================
+    const FILTER_KEY = 'keuangan_filter_v1';
+
+    function saveFilterState() {
+        try {
+            localStorage.setItem(FILTER_KEY, JSON.stringify({
+                bulan:  document.getElementById('filterBulan').value,
+                tahun:  document.getElementById('filterTahun').value,
+                search: document.getElementById('searchInput').value
+            }));
+        } catch(e) {}
+    }
+
+    function restoreFilterState() {
+        try {
+            const saved = localStorage.getItem(FILTER_KEY);
+            if (!saved) return;
+            const state = JSON.parse(saved);
+
+            if (state.bulan) {
+                document.getElementById('filterBulan').value = state.bulan;
+                document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
+                const mt = document.querySelector('.month-tab[data-bulan="' + state.bulan + '"]');
+                if (mt) mt.classList.add('active');
+            }
+            if (state.tahun) {
+                document.getElementById('filterTahun').value = state.tahun;
+                document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
+                const yt = document.querySelector('.year-tab[data-tahun="' + state.tahun + '"]');
+                if (yt) yt.classList.add('active');
+            }
+            if (state.search) {
+                document.getElementById('searchInput').value = state.search;
+            }
+        } catch(e) {}
+    }
+
+    // ========================
+    // ANIMATED NUMBER COUNTER
+    // ========================
+    var _lastVal = {};
+
+    function animateCount(el, toNum, duration) {
+        var id = el.id;
+        var fromNum = (_lastVal[id] !== undefined) ? _lastVal[id] : toNum;
+        _lastVal[id] = toNum;
+        if (fromNum === toNum) return;
+
+        el.classList.remove('pop');
+        void el.offsetWidth; /* reflow trick */
+        el.classList.add('pop');
+
+        var start = performance.now();
+        function step(now) {
+            var p = Math.min((now - start) / duration, 1);
+            var ease = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
+            var cur = Math.round(fromNum + (toNum - fromNum) * ease);
+            var sign = (id === 'cardSaldo' && toNum < 0) ? '-' : '';
+            el.textContent = sign + 'Rp ' + Math.abs(cur).toLocaleString('id-ID');
+            if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    // ========================
+    // BADGE FILTER AKTIF
+    // ========================
+    var BULAN_LABEL = {
+        '01':'Januari','02':'Februari','03':'Maret','04':'April',
+        '05':'Mei','06':'Juni','07':'Juli','08':'Agustus',
+        '09':'September','10':'Oktober','11':'November','12':'Desember'
+    };
+
+    function updateBadge(bulan, tahun) {
+        var badge = document.getElementById('activeFilterBadge');
+        var text  = document.getElementById('activeBadgeText');
+        var parts = [];
+        if (bulan) parts.push(BULAN_LABEL[bulan] || bulan);
+        if (tahun) parts.push(tahun);
+        if (parts.length) {
+            text.textContent = 'Menampilkan: ' + parts.join(' ');
+            badge.classList.add('visible');
+        } else {
+            badge.classList.remove('visible');
+        }
+    }
+
+    // ========================
     // FILTER & SEARCH LOGIC
     // ========================
     const totalRows = document.querySelectorAll('.transaksi-row').length;
@@ -1498,12 +1665,15 @@
     }
 
     function applyFilters() {
-        const search   = document.getElementById('searchInput').value.toLowerCase().trim();
-        const bulan    = document.getElementById('filterBulan').value;
-        const tahun    = document.getElementById('filterTahun').value;
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const bulan  = document.getElementById('filterBulan').value;
+        const tahun  = document.getElementById('filterTahun').value;
+
+        saveFilterState();
+        updateBadge(bulan, tahun);
 
         const rows = document.querySelectorAll('.transaksi-row');
-        let visibleCount = 0;
+        let visibleCount   = 0;
         let sumPemasukan   = 0;
         let sumPengeluaran = 0;
 
@@ -1512,37 +1682,35 @@
             const rowTahun    = row.getAttribute('data-tahun');
             const rowKet      = row.getAttribute('data-keterangan');
 
-            const matchBulan  = !bulan || rowBulan === bulan;
-            const matchTahun  = !tahun || rowTahun === tahun;
+            const matchBulan  = !bulan  || rowBulan === bulan;
+            const matchTahun  = !tahun  || rowTahun === tahun;
             const matchSearch = !search || rowKet.includes(search);
 
             if (matchBulan && matchTahun && matchSearch) {
                 row.style.display = '';
                 visibleCount++;
-                sumPemasukan   += parseFloat(row.getAttribute('data-pemasukan')) || 0;
+                sumPemasukan   += parseFloat(row.getAttribute('data-pemasukan'))   || 0;
                 sumPengeluaran += parseFloat(row.getAttribute('data-pengeluaran')) || 0;
 
-                // Highlight search
                 const ketCell = row.querySelector('.keterangan-cell');
                 if (search) {
-                    const originalText = row.getAttribute('data-keterangan');
                     const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
-                    ketCell.innerHTML = row.querySelector('.keterangan-cell').textContent.replace(regex, '<span class="highlight">$1</span>');
+                    ketCell.innerHTML = row.querySelector('.keterangan-cell').textContent
+                        .replace(regex, '<span class="highlight">$1</span>');
                 } else {
                     ketCell.innerHTML = ketCell.textContent;
                 }
-
             } else {
                 row.style.display = 'none';
             }
         });
 
-        // Update count
+        // Update count display
         document.getElementById('countShown').textContent = visibleCount;
         document.getElementById('resultCount').innerHTML =
             'Menampilkan <span>' + visibleCount + '</span> dari ' + totalRows + ' transaksi';
 
-        // Empty state
+        // Empty state tabel
         const filterEmpty = document.getElementById('filterEmptyState');
         const tableBody   = document.getElementById('tableBody');
         if (visibleCount === 0 && totalRows > 0) {
@@ -1553,12 +1721,26 @@
             tableBody.style.display   = '';
         }
 
-        // Update summary cards based on filtered data
-        const saldo = sumPemasukan - sumPengeluaran;
-        document.getElementById('cardPemasukan').textContent   = formatRp(sumPemasukan);
-        document.getElementById('cardPengeluaran').textContent = formatRp(sumPengeluaran);
-        document.getElementById('cardSaldo').textContent       = (saldo < 0 ? '-' : '') + formatRp(saldo);
+        // ========================
+        // Update kartu summary — animasi & empty state
+        // ========================
+        const saldo   = sumPemasukan - sumPengeluaran;
+        const isEmpty = visibleCount === 0 && (bulan || tahun || search);
+
+        ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(id) {
+            const box = document.getElementById(id);
+            if (isEmpty) {
+                box.classList.add('empty-state');
+            } else {
+                box.classList.remove('empty-state');
+            }
+        });
+
         document.getElementById('cardSaldo').style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
+
+        animateCount(document.getElementById('cardPemasukan'),   sumPemasukan,   280);
+        animateCount(document.getElementById('cardPengeluaran'), sumPengeluaran, 280);
+        animateCount(document.getElementById('cardSaldo'),       saldo,          280);
     }
 
     function escapeRegex(str) {
@@ -1566,27 +1748,23 @@
     }
 
     function resetFilters() {
-        document.getElementById('searchInput').value   = '';
-        document.getElementById('filterBulan').value   = '';
-        document.getElementById('filterTahun').value   = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('filterBulan').value = '';
+        document.getElementById('filterTahun').value = '';
 
-        // Reset tab bulan
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
         document.querySelector('.month-tab[data-bulan=""]').classList.add('active');
 
-        // Reset tab tahun
         document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
         document.querySelector('.year-tab[data-tahun=""]').classList.add('active');
 
+        try { localStorage.removeItem(FILTER_KEY); } catch(e) {}
         applyFilters();
     }
 
     function setMonthTab(el) {
-        // Update active tab
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
         el.classList.add('active');
-
-        // Sync dropdown
         document.getElementById('filterBulan').value = el.getAttribute('data-bulan');
         applyFilters();
     }
@@ -1594,7 +1772,6 @@
     function setYearTab(el) {
         document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
         el.classList.add('active');
-
         document.getElementById('filterTahun').value = el.getAttribute('data-tahun');
         applyFilters();
     }
@@ -1605,6 +1782,7 @@
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
         const activeTab = document.querySelector('.month-tab[data-bulan="' + val + '"]');
         if (activeTab) activeTab.classList.add('active');
+        applyFilters();
     });
 
     document.getElementById('filterTahun').addEventListener('change', function() {
@@ -1612,7 +1790,14 @@
         document.querySelectorAll('.year-tab').forEach(function(t){ t.classList.remove('active'); });
         const activeTab = document.querySelector('.year-tab[data-tahun="' + val + '"]');
         if (activeTab) activeTab.classList.add('active');
+        applyFilters();
     });
+
+    // ========================
+    // INIT: restore filter & apply on page load
+    // ========================
+    restoreFilterState();
+    applyFilters();
 
 </script>
 
