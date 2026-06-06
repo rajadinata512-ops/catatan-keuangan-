@@ -602,6 +602,44 @@
             color:#e9d5ff;
         }
 
+
+
+        /* Separator bulan saat filter bulan = Semua */
+        .month-group-row td{
+            background:transparent !important;
+            padding:22px 0 4px !important;
+            border-radius:0 !important;
+        }
+
+        .month-group-title{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            color:#c4b5fd;
+            font-size:15px;
+            font-weight:700;
+            letter-spacing:.03em;
+            text-transform:uppercase;
+        }
+
+        .month-group-title::after{
+            content:"";
+            height:1px;
+            flex:1;
+            background:linear-gradient(90deg,rgba(139,92,246,.45),transparent);
+        }
+
+        .month-group-pill{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            padding:7px 14px;
+            border-radius:999px;
+            background:rgba(139,92,246,.13);
+            border:1px solid rgba(139,92,246,.28);
+            box-shadow:0 0 18px rgba(139,92,246,.12);
+        }
+
         /* ========================
            ACTION BUTTONS PER ROW
         ======================== */
@@ -1687,11 +1725,53 @@
         return matchBulan && matchTahun && matchSearch;
     }
 
-    function updateTableRows(filter) {
-        const rows = document.querySelectorAll('.transaksi-row');
-        let visibleCount = 0;
+    function getRowDateValue(row) {
+        const raw = (row.getAttribute('data-tanggal') || '').trim();
+        return raw.substring(0, 10);
+    }
 
-        rows.forEach(function(row) {
+    function getMonthGroupLabel(row) {
+        const bulan = (row.getAttribute('data-bulan') || '').trim();
+        const tahun = String(row.getAttribute('data-tahun') || '').trim();
+        return (BULAN_LABEL[bulan] || bulan) + (tahun ? ' ' + tahun : '');
+    }
+
+    function createMonthGroupRow(label) {
+        const groupRow = document.createElement('tr');
+        groupRow.className = 'month-group-row';
+        groupRow.innerHTML =
+            '<td colspan="6">' +
+                '<div class="month-group-title">' +
+                    '<span class="month-group-pill">📅 ' + label + '</span>' +
+                '</div>' +
+            '</td>';
+        return groupRow;
+    }
+
+    function updateKeteranganHighlight(row, search) {
+        const ketCell = row.querySelector('.keterangan-cell');
+        if (!ketCell) return;
+
+        const originalText = ketCell.textContent;
+
+        if (search) {
+            const regex = new RegExp('(' + escapeRegex(search) + ')', 'gi');
+            ketCell.innerHTML = originalText.replace(regex, '<span class="highlight">$1</span>');
+        } else {
+            ketCell.textContent = originalText;
+        }
+    }
+
+    function updateTableRows(filter) {
+        const tableBody = getEl('tableBody');
+        const rows = Array.from(document.querySelectorAll('.transaksi-row'));
+        let visibleRows = [];
+
+        document.querySelectorAll('.month-group-row').forEach(function(row) {
+            row.remove();
+        });
+
+        rows.forEach(function(row, index) {
             const rowBulan = (row.getAttribute('data-bulan') || '').trim();
             const rowTahun = String(row.getAttribute('data-tahun') || '').trim();
             const rowKet   = (row.getAttribute('data-keterangan') || '').toLowerCase();
@@ -1700,25 +1780,47 @@
                          (!filter.tahun  || rowTahun === filter.tahun) &&
                          (!filter.search || rowKet.includes(filter.search));
 
+            row.dataset.originalIndex = row.dataset.originalIndex || index;
             row.style.display = show ? '' : 'none';
 
-            if (show) {
-                visibleCount++;
+            if (show) visibleRows.push(row);
+        });
 
-                const ketCell = row.querySelector('.keterangan-cell');
-                if (ketCell) {
-                    const originalText = ketCell.textContent;
-                    if (filter.search) {
-                        const regex = new RegExp('(' + escapeRegex(filter.search) + ')', 'gi');
-                        ketCell.innerHTML = originalText.replace(regex, '<span class="highlight">$1</span>');
-                    } else {
-                        ketCell.textContent = originalText;
-                    }
+        visibleRows.sort(function(a, b) {
+            const dateA = getRowDateValue(a);
+            const dateB = getRowDateValue(b);
+
+            if (dateA !== dateB) {
+                return dateB.localeCompare(dateA); // tanggal terbaru selalu di atas
+            }
+
+            return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+        });
+
+        let activeGroup = '';
+
+        visibleRows.forEach(function(row) {
+            updateKeteranganHighlight(row, filter.search);
+
+            if (tableBody && !filter.bulan) {
+                const groupKey = (row.getAttribute('data-tahun') || '') + '-' + (row.getAttribute('data-bulan') || '');
+
+                if (groupKey !== activeGroup) {
+                    activeGroup = groupKey;
+                    tableBody.appendChild(createMonthGroupRow(getMonthGroupLabel(row)));
                 }
+            }
+
+            if (tableBody) tableBody.appendChild(row);
+        });
+
+        rows.forEach(function(row) {
+            if (row.style.display === 'none' && tableBody) {
+                tableBody.appendChild(row);
             }
         });
 
-        return visibleCount;
+        return visibleRows.length;
     }
 
     function calculateSummary(filter) {
