@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaksi extends Model
 {
-protected $fillable = [
-    'user_id',
-    'tanggal',
-    'keterangan',
-    'pemasukan',
-    'pengeluaran',
-    'saldo',
-];
+    protected $fillable = [
+        'user_id',
+        'tanggal',
+        'kategori',
+        'keterangan',
+        'pemasukan',
+        'pengeluaran',
+        'saldo',
+    ];
 }

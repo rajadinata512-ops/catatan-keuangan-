@@ -2,30 +2,141 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Transaksi;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class TransaksiController extends Controller
 {
+    private function kategoriOptions(): array
+    {
+        return [
+            'Makanan',
+            'Transportasi',
+            'Tagihan',
+            'Hutang',
+            'Gaji',
+            'Belanja',
+            'Pendidikan',
+            'Kesehatan',
+            'Hiburan',
+            'Tabungan',
+            'Lainnya',
+        ];
+    }
+
+    private function kategoriColumnExists(): bool
+    {
+        try {
+            return Schema::hasColumn('transaksis', 'kategori');
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    private function inferKategori(?string $keterangan, float|int|string|null $pemasukan = 0, float|int|string|null $pengeluaran = 0): string
+    {
+        $text = strtolower((string) $keterangan);
+        $income = (float) ($pemasukan ?? 0);
+        $expense = (float) ($pengeluaran ?? 0);
+
+        if ($income > 0 && $expense <= 0) {
+            if (str_contains($text, 'gaji') || str_contains($text, 'upah') || str_contains($text, 'salary')) {
+                return 'Gaji';
+            }
+            if (str_contains($text, 'tabung') || str_contains($text, 'saving')) {
+                return 'Tabungan';
+            }
+        }
+
+        $map = [
+            'Makanan' => ['kopi', 'nasi', 'makan', 'goreng', 'bakso', 'mie', 'ayam', 'minum', 'latte', 'kede', 'kafe', 'cafe'],
+            'Transportasi' => ['bensin', 'pertalite', 'solar', 'parkir', 'grab', 'gojek', 'angkot', 'transport', 'ojek'],
+            'Tagihan' => ['listrik', 'air', 'wifi', 'pulsa', 'kuota', 'kos', 'kost', 'kontrakan', 'tagihan'],
+            'Hutang' => ['hutang', 'utang', 'lunasin', 'lunas', 'bayar pinjam', 'pinjaman'],
+            'Belanja' => ['beli', 'indomaret', 'alfamart', 'paket', 'shopee', 'tokopedia', 'bima'],
+            'Pendidikan' => ['kampus', 'kuliah', 'buku', 'print', 'fotocopy', 'kelas', 'tugas'],
+            'Kesehatan' => ['obat', 'dokter', 'klinik', 'rumah sakit', 'vitamin'],
+            'Hiburan' => ['game', 'nonton', 'bioskop', 'spotify', 'netflix', 'hiburan'],
+            'Tabungan' => ['tabung', 'saving', 'deposit'],
+        ];
+
+        foreach ($map as $kategori => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($text, $keyword)) {
+                    return $kategori;
+                }
+            }
+        }
+
+        return $income > 0 && $expense <= 0 ? 'Gaji' : 'Lainnya';
+    }
+
+    private function attachKategoriFallback($transaksis)
+    {
+        foreach ($transaksis as $transaksi) {
+            $kategori = $transaksi->getAttribute('kategori');
+
+            if (!$kategori) {
+                $kategori = $this->inferKategori(
+                    $transaksi->keterangan,
+                    $transaksi->pemasukan,
+                    $transaksi->pengeluaran
+                );
+            }
+
+            $transaksi->setAttribute('kategori', $kategori);
+        }
+
+        return $transaksis;
+    }
+
+    private function recalculateSaldo(): void
+    {
+        $semuaTransaksi = Transaksi::where('user_id', auth()->id())
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $saldo = 0;
+
+        foreach ($semuaTransaksi as $transaksi) {
+            $saldo = $saldo + (float) $transaksi->pemasukan - (float) $transaksi->pengeluaran;
+            $transaksi->saldo = $saldo;
+            $transaksi->save();
+        }
+    }
+
+    private function baseDashboardData(): array
+    {
+        $transaksis = Transaksi::where('user_id', auth()->id())
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $transaksis = $this->attachKategoriFallback($transaksis);
+
+        $totalPemasukan   = $transaksis->sum('pemasukan');
+        $totalPengeluaran = $transaksis->sum('pengeluaran');
+        $saldoAkhir       = $totalPemasukan - $totalPengeluaran;
+
+        return [
+            'transaksis'       => $transaksis,
+            'totalPemasukan'   => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'saldoAkhir'       => $saldoAkhir,
+            'kategoriOptions'  => $this->kategoriOptions(),
+        ];
+    }
+
     /**
      * Halaman utama dashboard — menampilkan ringkasan & daftar transaksi.
      */
     public function dashboard()
     {
-        $transaksis = Transaksi::where('user_id', auth()->id())
-            ->latest()
-            ->get();
-
-        $totalPemasukan   = $transaksis->sum('pemasukan');
-        $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->first()->saldo ?? 0; // latest() = DESC, jadi first() = terbaru
-
-        return view('dashboard', [
-            'transaksis'       => $transaksis,
-            'totalPemasukan'   => $totalPemasukan,
-            'totalPengeluaran' => $totalPengeluaran,
-            'saldoAkhir'       => $saldoAkhir,
-        ]);
+        return view('dashboard', $this->baseDashboardData());
     }
 
     /**
@@ -33,49 +144,43 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        $transaksis = Transaksi::where('user_id', auth()->id())
-            ->latest()
-            ->get();
-
-        $totalPemasukan   = $transaksis->sum('pemasukan');
-        $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->first()->saldo ?? 0; // latest() = DESC, jadi first() = terbaru
-
-        return view('transaksi.index', [
-            'transaksis'       => $transaksis,
-            'totalPemasukan'   => $totalPemasukan,
-            'totalPengeluaran' => $totalPengeluaran,
-            'saldoAkhir'       => $saldoAkhir,
-        ]);
+        return view('transaksi.index', $this->baseDashboardData());
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'tanggal'     => 'required|date',
+            'kategori'    => 'nullable|string|max:50',
             'keterangan'  => 'required|string|max:500',
             'pemasukan'   => 'nullable|numeric|min:0|max:999999999999',
             'pengeluaran' => 'nullable|numeric|min:0|max:999999999999',
         ]);
 
-        $transaksiTerakhir = Transaksi::where('user_id', auth()->id())
-            ->latest()
-            ->first();
+        $pemasukan = (float) ($request->pemasukan ?? 0);
+        $pengeluaran = (float) ($request->pengeluaran ?? 0);
 
-        $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
+        if ($pemasukan <= 0 && $pengeluaran <= 0) {
+            return back()
+                ->withErrors(['nominal' => 'Isi minimal pemasukan atau pengeluaran.'])
+                ->withInput();
+        }
 
-        $saldoBaru = $saldoTerakhir
-            + ($request->pemasukan   ?? 0)
-            - ($request->pengeluaran ?? 0);
-
-        Transaksi::create([
+        $data = [
             'user_id'     => auth()->id(),
             'tanggal'     => $request->tanggal,
             'keterangan'  => $request->keterangan,
-            'pemasukan'   => $request->pemasukan   ?? 0,
-            'pengeluaran' => $request->pengeluaran ?? 0,
-            'saldo'       => $saldoBaru,
-        ]);
+            'pemasukan'   => $pemasukan,
+            'pengeluaran' => $pengeluaran,
+            'saldo'       => 0,
+        ];
+
+        if ($this->kategoriColumnExists()) {
+            $data['kategori'] = $request->kategori ?: $this->inferKategori($request->keterangan, $pemasukan, $pengeluaran);
+        }
+
+        Transaksi::create($data);
+        $this->recalculateSaldo();
 
         return back()->with('success', 'Transaksi berhasil ditambahkan.');
     }
@@ -91,29 +196,34 @@ class TransaksiController extends Controller
 
         $request->validate([
             'tanggal'     => 'required|date',
+            'kategori'    => 'nullable|string|max:50',
             'keterangan'  => 'required|string|max:500',
             'pemasukan'   => 'nullable|numeric|min:0|max:999999999999',
             'pengeluaran' => 'nullable|numeric|min:0|max:999999999999',
         ]);
 
-        $transaksi->update([
+        $pemasukan = (float) ($request->pemasukan ?? 0);
+        $pengeluaran = (float) ($request->pengeluaran ?? 0);
+
+        if ($pemasukan <= 0 && $pengeluaran <= 0) {
+            return back()
+                ->withErrors(['nominal' => 'Isi minimal pemasukan atau pengeluaran.'])
+                ->withInput();
+        }
+
+        $data = [
             'tanggal'     => $request->tanggal,
             'keterangan'  => $request->keterangan,
-            'pemasukan'   => $request->pemasukan   ?? 0,
-            'pengeluaran' => $request->pengeluaran ?? 0,
-        ]);
+            'pemasukan'   => $pemasukan,
+            'pengeluaran' => $pengeluaran,
+        ];
 
-        // Recalculate saldo semua transaksi user ini secara berurutan
-        $semuaTransaksi = Transaksi::where('user_id', auth()->id())
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $saldo = 0;
-        foreach ($semuaTransaksi as $t) {
-            $saldo = $saldo + $t->pemasukan - $t->pengeluaran;
-            $t->saldo = $saldo;
-            $t->save();
+        if ($this->kategoriColumnExists()) {
+            $data['kategori'] = $request->kategori ?: $this->inferKategori($request->keterangan, $pemasukan, $pengeluaran);
         }
+
+        $transaksi->update($data);
+        $this->recalculateSaldo();
 
         return back()->with('success', 'Transaksi berhasil diperbarui.');
     }
@@ -125,18 +235,7 @@ class TransaksiController extends Controller
         }
 
         $transaksi->delete();
-
-        // Recalculate saldo setelah hapus
-        $semuaTransaksi = Transaksi::where('user_id', auth()->id())
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $saldo = 0;
-        foreach ($semuaTransaksi as $t) {
-            $saldo = $saldo + $t->pemasukan - $t->pengeluaran;
-            $t->saldo = $saldo;
-            $t->save();
-        }
+        $this->recalculateSaldo();
 
         return back()->with('success', 'Transaksi berhasil dihapus.');
     }
@@ -150,10 +249,17 @@ class TransaksiController extends Controller
 
     public function export()
     {
-        $transaksis       = Transaksi::where('user_id', auth()->id())->orderBy('created_at', 'asc')->get();
+        $transaksis = Transaksi::where('user_id', auth()->id())
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $transaksis = $this->attachKategoriFallback($transaksis);
+
         $totalPemasukan   = $transaksis->sum('pemasukan');
         $totalPengeluaran = $transaksis->sum('pengeluaran');
-        $saldoAkhir       = $transaksis->last()->saldo ?? 0; // ASC order, jadi last() = terbaru
+        $saldoAkhir       = $totalPemasukan - $totalPengeluaran;
 
         $filename = 'catatan_keuangan.xls';
 
@@ -167,7 +273,7 @@ class TransaksiController extends Controller
         <head>
         <meta charset="UTF-8">
         <style>
-        table { border-collapse: collapse; width: 70%; margin: auto; font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; width: 80%; margin: auto; font-family: Arial, sans-serif; }
         th    { background-color: #6C63FF; color: white; padding: 10px; border: 1px solid black; text-align: center; font-weight: bold; }
         td    { border: 1px solid black; padding: 8px; text-align: center; }
         .money { text-align: center; }
@@ -179,6 +285,7 @@ class TransaksiController extends Controller
         <table>
         <tr>
             <th>Tanggal</th>
+            <th>Kategori</th>
             <th>Keterangan</th>
             <th>Pemasukan</th>
             <th>Pengeluaran</th>
@@ -188,6 +295,7 @@ class TransaksiController extends Controller
         foreach ($transaksis as $t) {
             $html .= '<tr>
                 <td>' . htmlspecialchars($t->tanggal,    ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($t->kategori ?? 'Lainnya', ENT_QUOTES, 'UTF-8') . '</td>
                 <td>' . htmlspecialchars($t->keterangan, ENT_QUOTES, 'UTF-8') . '</td>
                 <td class="money">Rp ' . number_format($t->pemasukan,   0, ',', '.') . '</td>
                 <td class="money">Rp ' . number_format($t->pengeluaran, 0, ',', '.') . '</td>
@@ -196,11 +304,11 @@ class TransaksiController extends Controller
         }
 
         $html .= '
-        <tr class="total"><td colspan="2">Total Pemasukan</td>
+        <tr class="total"><td colspan="3">Total Pemasukan</td>
             <td class="money">Rp ' . number_format($totalPemasukan,   0, ',', '.') . '</td><td></td><td></td></tr>
-        <tr class="total"><td colspan="2">Total Pengeluaran</td>
+        <tr class="total"><td colspan="3">Total Pengeluaran</td>
             <td></td><td class="money">Rp ' . number_format($totalPengeluaran, 0, ',', '.') . '</td><td></td></tr>
-        <tr class="total"><td colspan="2">Saldo Akhir</td>
+        <tr class="total"><td colspan="3">Saldo Akhir</td>
             <td></td><td></td><td class="money">Rp ' . number_format($saldoAkhir, 0, ',', '.') . '</td></tr>
         </table>
         </body>
