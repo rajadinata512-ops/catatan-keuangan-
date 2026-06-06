@@ -1610,23 +1610,35 @@
     // ========================
     var _lastVal = {};
 
-    function animateCount(el, toNum, duration) {
-        var id = el.id;
-        var fromNum = (_lastVal[id] !== undefined) ? _lastVal[id] : toNum;
-        _lastVal[id] = toNum;
-        if (fromNum === toNum) return;
+    function setCardText(el, num) {
+        var sign = (el.id === 'cardSaldo' && num < 0) ? '-' : '';
+        el.textContent = sign + 'Rp ' + Math.abs(num).toLocaleString('id-ID');
+    }
 
+    function animateCount(el, toNum, duration) {
+        var id      = el.id;
+        var hasLast = (_lastVal[id] !== undefined);
+        var fromNum = hasLast ? _lastVal[id] : null;
+        _lastVal[id] = toNum;
+
+        /* Nilai sama ATAU belum pernah ada — langsung tulis teks, tanpa animasi */
+        if (!hasLast || fromNum === toNum) {
+            setCardText(el, toNum);
+            return;
+        }
+
+        /* Ada perubahan — animasi pop + count */
         el.classList.remove('pop');
-        void el.offsetWidth; /* reflow trick */
+        void el.offsetWidth; /* reflow agar animasi restart */
         el.classList.add('pop');
 
         var start = performance.now();
         function step(now) {
-            var p = Math.min((now - start) / duration, 1);
+            var p   = Math.min((now - start) / duration, 1);
             var ease = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
             var cur = Math.round(fromNum + (toNum - fromNum) * ease);
-            var sign = (id === 'cardSaldo' && toNum < 0) ? '-' : '';
-            el.textContent = sign + 'Rp ' + Math.abs(cur).toLocaleString('id-ID');
+            var curSign = (id === 'cardSaldo' && cur < 0) ? '-' : '';
+            el.textContent = curSign + 'Rp ' + Math.abs(cur).toLocaleString('id-ID');
             if (p < 1) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
@@ -1796,6 +1808,9 @@
     // ========================
     // INIT: restore filter & apply on page load
     // ========================
+    /* Reset cache agar animateCount pasti menulis teks baru,
+       bukan nilai lama yang di-render server */
+    _lastVal = {};
     restoreFilterState();
     applyFilters();
 
