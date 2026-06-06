@@ -1736,8 +1736,11 @@
         // ========================
         // Update kartu summary — animasi & empty state
         // ========================
-        const saldo   = sumPemasukan - sumPengeluaran;
-        const isEmpty = visibleCount === 0 && (bulan || tahun || search);
+        const saldo = sumPemasukan - sumPengeluaran;
+
+        // Empty state hanya ditampilkan kalau TIDAK ADA filter aktif DAN tidak ada data sama sekali
+        const noFilterActive = !bulan && !tahun && !search;
+        const isEmpty = visibleCount === 0 && noFilterActive;
 
         ['cardIncomeBox','cardExpenseBox','cardBalanceBox'].forEach(function(id) {
             const box = document.getElementById(id);
