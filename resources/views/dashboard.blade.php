@@ -1606,62 +1606,32 @@
     }
 
     // ========================
-    // ANIMATED NUMBER COUNTER — race-condition safe
-    // Setiap elemen punya satu RAF token; panggilan baru membatalkan yang lama.
+    // UPDATE KARTU — langsung & sinkron, tanpa RAF
     // ========================
-    var _rafId    = {};   // requestAnimationFrame handle per elemen
-    var _lastVal  = {};   // nilai terakhir yang di-set per elemen
-
-    function setCardText(el, num) {
-        var sign = (el.id === 'cardSaldo' && num < 0) ? '-' : '';
-        el.textContent = sign + 'Rp ' + Math.abs(Math.round(num)).toLocaleString('id-ID');
+    function formatRupiah(n) {
+        return 'Rp ' + Math.abs(Math.round(n)).toLocaleString('id-ID');
     }
 
-    function animateCount(el, toNum, duration) {
-        var id        = el.id;
-        var firstTime = (_lastVal[id] === undefined);
+    function updateCards(sumPemasukan, sumPengeluaran) {
+        var saldo         = sumPemasukan - sumPengeluaran;
+        var elPemasukan   = document.getElementById('cardPemasukan');
+        var elPengeluaran = document.getElementById('cardPengeluaran');
+        var elSaldo       = document.getElementById('cardSaldo');
 
-        // Batalkan animasi sebelumnya supaya tidak overwrite nilai baru
-        if (_rafId[id]) {
-            cancelAnimationFrame(_rafId[id]);
-            _rafId[id] = null;
-        }
+        if (!elPemasukan || !elPengeluaran || !elSaldo) return;
 
-        // Pertama kali: selalu langsung tulis (DOM masih berisi teks PHP server)
-        if (firstTime) {
-            _lastVal[id] = toNum;
-            setCardText(el, toNum);
-            return;
-        }
+        // Tulis langsung — tidak pakai RAF, jadi pasti langsung tampil
+        elPemasukan.textContent   = formatRupiah(sumPemasukan);
+        elPengeluaran.textContent = formatRupiah(sumPengeluaran);
+        elSaldo.textContent       = (saldo < 0 ? '-' : '') + formatRupiah(saldo);
+        elSaldo.style.color       = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
 
-        var fromNum  = _lastVal[id];
-        _lastVal[id] = toNum;
-
-        // Nilai sama — tulis saja tanpa animasi
-        if (fromNum === toNum) {
-            setCardText(el, toNum);
-            return;
-        }
-
-        // Animasi pop + count
-        el.classList.remove('pop');
-        void el.offsetWidth;
-        el.classList.add('pop');
-
-        var start = performance.now();
-        function step(now) {
-            var p    = Math.min((now - start) / duration, 1);
-            var ease = 1 - Math.pow(1 - p, 3);
-            var cur  = fromNum + (toNum - fromNum) * ease;
-            setCardText(el, cur);
-            if (p < 1) {
-                _rafId[id] = requestAnimationFrame(step);
-            } else {
-                _rafId[id] = null;
-                setCardText(el, toNum);
-            }
-        }
-        _rafId[id] = requestAnimationFrame(step);
+        // Pop animation — hapus class dulu lalu tambah lagi supaya animasi selalu reset
+        [elPemasukan, elPengeluaran, elSaldo].forEach(function(el) {
+            el.classList.remove('pop');
+            void el.offsetWidth; // force reflow
+            el.classList.add('pop');
+        });
     }
 
     // ========================
@@ -1774,14 +1744,8 @@
             }
         });
 
-        const cardSaldo = document.getElementById('cardSaldo');
-        if (cardSaldo) {
-            cardSaldo.style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
-        }
-
-        animateCount(document.getElementById('cardPemasukan'),   sumPemasukan,   300);
-        animateCount(document.getElementById('cardPengeluaran'), sumPengeluaran, 300);
-        animateCount(document.getElementById('cardSaldo'),       saldo,          300);
+        // Update kartu langsung
+        updateCards(sumPemasukan, sumPengeluaran);
     }
 
     function resetFilters() {
@@ -1834,11 +1798,7 @@
 
     // ========================
     // INIT: restore filter → apply
-    // _lastVal dikosongkan dulu agar animateCount membaca dari nilai 0,
-    // sehingga animasi selalu jalan dari 0 ke nilai filter pertama kali.
     // ========================
-    _lastVal = {};
-    _rafId   = {};
     restoreFilterState();
     applyFilters();
 
