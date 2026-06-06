@@ -1618,7 +1618,8 @@
     }
 
     function animateCount(el, toNum, duration) {
-        var id = el.id;
+        var id        = el.id;
+        var firstTime = (_lastVal[id] === undefined);
 
         // Batalkan animasi sebelumnya supaya tidak overwrite nilai baru
         if (_rafId[id]) {
@@ -1626,10 +1627,17 @@
             _rafId[id] = null;
         }
 
-        var fromNum = (_lastVal[id] !== undefined) ? _lastVal[id] : toNum;
+        // Pertama kali: selalu langsung tulis (DOM masih berisi teks PHP server)
+        if (firstTime) {
+            _lastVal[id] = toNum;
+            setCardText(el, toNum);
+            return;
+        }
+
+        var fromNum  = _lastVal[id];
         _lastVal[id] = toNum;
 
-        // Langsung tulis kalau nilai sama
+        // Nilai sama — tulis saja tanpa animasi
         if (fromNum === toNum) {
             setCardText(el, toNum);
             return;
@@ -1650,7 +1658,7 @@
                 _rafId[id] = requestAnimationFrame(step);
             } else {
                 _rafId[id] = null;
-                setCardText(el, toNum); // pastikan nilai final tepat
+                setCardText(el, toNum);
             }
         }
         _rafId[id] = requestAnimationFrame(step);
