@@ -102,10 +102,7 @@
             word-break:break-word;
             overflow-wrap:break-word;
             line-height:1.3;
-            opacity:0;
-            transition:opacity 0.15s ease;
         }
-        .value.loaded{ opacity:1; }
 
         .form-box{
             background:rgba(255,255,255,.03);
@@ -1609,24 +1606,7 @@
         return 'Rp ' + Math.abs(Math.round(n)).toLocaleString('id-ID');
     }
 
-    function animateCount(el, targetVal, isNeg) {
-        var start    = 0;
-        var duration = 350;
-        var startTime = null;
-
-        function step(ts) {
-            if (!startTime) startTime = ts;
-            var prog = Math.min((ts - startTime) / duration, 1);
-            var ease = 1 - Math.pow(1 - prog, 3); // ease-out cubic
-            var cur  = Math.round(ease * targetVal);
-            el.textContent = (isNeg ? '-' : '') + 'Rp ' + cur.toLocaleString('id-ID');
-            if (prog < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-
     function updateCards(sumPemasukan, sumPengeluaran) {
-        console.log('[KeuanganApp] updateCards:', sumPemasukan, sumPengeluaran);
         var saldo         = sumPemasukan - sumPengeluaran;
         var elPemasukan   = document.getElementById('cardPemasukan');
         var elPengeluaran = document.getElementById('cardPengeluaran');
@@ -1634,19 +1614,16 @@
 
         if (!elPemasukan || !elPengeluaran || !elSaldo) return;
 
-        // Langsung set warna saldo dulu
-        elSaldo.style.color = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
+        // Tulis langsung — tidak pakai RAF, jadi pasti langsung tampil
+        elPemasukan.textContent   = formatRupiah(sumPemasukan);
+        elPengeluaran.textContent = formatRupiah(sumPengeluaran);
+        elSaldo.textContent       = (saldo < 0 ? '-' : '') + formatRupiah(saldo);
+        elSaldo.style.color       = saldo < 0 ? '#ff4d4d' : '#8b5cf6';
 
-        // Animate counting up
-        animateCount(elPemasukan,   Math.abs(Math.round(sumPemasukan)),   false);
-        animateCount(elPengeluaran, Math.abs(Math.round(sumPengeluaran)), false);
-        animateCount(elSaldo,       Math.abs(Math.round(saldo)),          saldo < 0);
-
-        // Pop animation + loaded (fade in)
+        // Pop animation — hapus class dulu lalu tambah lagi supaya animasi selalu reset
         [elPemasukan, elPengeluaran, elSaldo].forEach(function(el) {
-            el.classList.add('loaded');
             el.classList.remove('pop');
-            void el.offsetWidth;
+            void el.offsetWidth; // force reflow
             el.classList.add('pop');
         });
     }
@@ -1783,7 +1760,6 @@
     }
 
     function setMonthTab(el) {
-        console.log('[KeuanganApp] setMonthTab called, bulan:', el.getAttribute('data-bulan'));
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
         el.classList.add('active');
         document.getElementById('filterBulan').value = el.getAttribute('data-bulan');
@@ -1815,16 +1791,17 @@
     });
 
     // ========================
-    // INIT: restore filter → apply (dijamin setelah DOM ready)
+    // INIT: restore filter → apply
     // ========================
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            restoreFilterState();
-            applyFilters();
-        });
-    } else {
+    // INIT — dijamin setelah DOM siap
+    function initApp() {
         restoreFilterState();
         applyFilters();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
     }
 
 </script>
