@@ -1626,6 +1626,7 @@
     }
 
     function updateCards(sumPemasukan, sumPengeluaran) {
+        console.log('[KeuanganApp] updateCards:', sumPemasukan, sumPengeluaran);
         var saldo         = sumPemasukan - sumPengeluaran;
         var elPemasukan   = document.getElementById('cardPemasukan');
         var elPengeluaran = document.getElementById('cardPengeluaran');
@@ -1782,6 +1783,7 @@
     }
 
     function setMonthTab(el) {
+        console.log('[KeuanganApp] setMonthTab called, bulan:', el.getAttribute('data-bulan'));
         document.querySelectorAll('.month-tab').forEach(function(t){ t.classList.remove('active'); });
         el.classList.add('active');
         document.getElementById('filterBulan').value = el.getAttribute('data-bulan');
