@@ -257,7 +257,7 @@
         .kat-wrap.size-sm .kat-trigger{height:58px;font-size:15px;border-radius:18px;}
         .kat-wrap.size-md .kat-trigger{height:54px;font-size:16px;border-radius:16px;}
         .kat-menu{
-            position:absolute;top:calc(100% + 6px);left:0;right:0;
+            position:fixed;top:0;left:0;width:200px;
             background:#111427;border:1px solid rgba(139,92,246,.4);border-radius:18px;
             z-index:10100;box-shadow:0 22px 55px rgba(0,0,0,.65),0 0 28px rgba(139,92,246,.15);
             display:none;overflow:visible;min-width:180px;
@@ -268,7 +268,8 @@
         .kat-opts::-webkit-scrollbar{width:4px;}.kat-opts::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:4px;}
         .kat-opt{padding:11px 16px;border-radius:12px;color:white;cursor:pointer;font-size:15px;transition:.12s;user-select:none;}
         .kat-opt:hover{background:rgba(139,92,246,.18);color:#e9d5ff;}
-        .kat-opt.sel{background:rgba(139,92,246,.26);color:#e9d5ff;font-weight:600;}
+        .kat-opt.sel{background:rgba(139,92,246,.26);color:#e9d5ff;font-weight:600;position:relative;padding-left:36px;}
+        .kat-opt.sel::before{content:"✓";position:absolute;left:14px;color:#a78bfa;font-weight:700;}
         .kat-opt.plch-opt{color:#9ca3af;}
         .kat-line{height:1px;background:rgba(255,255,255,.08);margin:4px 8px;}
         .kat-footer{margin:4px 8px 8px;}
@@ -889,6 +890,9 @@
                 (function(v){ d.addEventListener('click', function(){ pick(v); }); })(opt.v);
                 optsEl.appendChild(d);
             });
+            // Scroll selected item into view
+            var sel = optsEl.querySelector('.kat-opt.sel');
+            if (sel) sel.scrollIntoView({block:'nearest'});
         }
 
         function setTrigger() {
@@ -920,6 +924,11 @@
 
         function openMenu() {
             isOpen = true;
+            // Position menu using fixed coords (escapes backdrop-filter stacking context)
+            var rect = trigger.getBoundingClientRect();
+            menu.style.top   = (rect.bottom + 6) + 'px';
+            menu.style.left  = rect.left + 'px';
+            menu.style.width = rect.width + 'px';
             menu.classList.add('show');
             trigger.classList.add('open');
             if (addArea) addArea.classList.remove('show');
@@ -932,6 +941,14 @@
             trigger.classList.remove('open');
         }
 
+        function reposition() {
+            if (!isOpen) return;
+            var rect = trigger.getBoundingClientRect();
+            menu.style.top   = (rect.bottom + 6) + 'px';
+            menu.style.left  = rect.left + 'px';
+            menu.style.width = rect.width + 'px';
+        }
+
         trigger.addEventListener('click', function(e) {
             e.stopPropagation();
             if (isOpen) closeMenu();
@@ -939,8 +956,11 @@
         });
 
         document.addEventListener('click', function(e) {
-            if (!wrap.contains(e.target)) closeMenu();
+            if (!wrap.contains(e.target) && !menu.contains(e.target)) closeMenu();
         });
+
+        window.addEventListener('scroll', reposition, true);
+        window.addEventListener('resize', reposition);
 
         if (addRow) addRow.addEventListener('click', function(e) {
             e.stopPropagation();
