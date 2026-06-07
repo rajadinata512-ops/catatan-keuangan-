@@ -264,8 +264,8 @@
         }
         .kat-menu.show{display:block;animation:katSlide .18s ease;}
         @keyframes katSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-        .kat-opts{max-height:220px;overflow-y:auto;padding:8px;border-radius:18px 18px 0 0;}
-        .kat-opts::-webkit-scrollbar{width:4px;}.kat-opts::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:4px;}
+        .kat-opts{max-height:220px;overflow-y:scroll;padding:8px;border-radius:18px 18px 0 0;-webkit-mask-image:linear-gradient(to bottom,transparent 0,black 16px,black calc(100% - 16px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,black 16px,black calc(100% - 16px),transparent 100%);}
+        .kat-opts::-webkit-scrollbar{width:5px;}.kat-opts::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:4px;}.kat-opts::-webkit-scrollbar-thumb{background:rgba(139,92,246,.55);border-radius:4px;}
         .kat-opt{padding:11px 16px;border-radius:12px;color:white;cursor:pointer;font-size:15px;transition:.12s;user-select:none;}
         .kat-opt:hover{background:rgba(139,92,246,.18);color:#e9d5ff;}
         .kat-opt.sel{background:rgba(139,92,246,.26);color:#e9d5ff;font-weight:600;position:relative;padding-left:36px;}
@@ -892,7 +892,7 @@
             });
             // Scroll selected item into view
             var sel = optsEl.querySelector('.kat-opt.sel');
-            if (sel) sel.scrollIntoView({block:'nearest'});
+            if (sel) sel.scrollIntoView({block:'center'});
         }
 
         function setTrigger() {
