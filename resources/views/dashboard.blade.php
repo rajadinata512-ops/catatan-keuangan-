@@ -241,13 +241,65 @@
     border-top-color: #ffffff !important;
 }
         footer{margin-top:60px;text-align:center;color:#6b7280;font-size:18px;}
+
+        /* ===== CUSTOM KATEGORI DROPDOWN ===== */
+        .kat-wrap{position:relative;width:100%;}
+        .kat-trigger{
+            width:100%;height:66px;background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.06);border-radius:22px;
+            padding:0 48px 0 20px;font-size:17px;color:white;
+            display:flex;align-items:center;cursor:pointer;transition:.2s;user-select:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat:no-repeat;background-position:right 18px center;
+        }
+        .kat-trigger:hover,.kat-trigger.open{border-color:#8b5cf6;box-shadow:0 0 25px rgba(139,92,246,.25);}
+        .kat-trigger.plch{color:#9ca3af;}
+        .kat-wrap.size-sm .kat-trigger{height:58px;font-size:15px;border-radius:18px;}
+        .kat-wrap.size-md .kat-trigger{height:54px;font-size:16px;border-radius:16px;}
+        .kat-menu{
+            position:absolute;top:calc(100% + 6px);left:0;right:0;
+            background:#111427;border:1px solid rgba(139,92,246,.4);border-radius:18px;
+            z-index:9999;box-shadow:0 22px 55px rgba(0,0,0,.65),0 0 28px rgba(139,92,246,.15);
+            display:none;overflow:hidden;min-width:180px;
+        }
+        .kat-menu.show{display:block;animation:katSlide .18s ease;}
+        @keyframes katSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .kat-opts{max-height:240px;overflow-y:auto;padding:8px;}
+        .kat-opts::-webkit-scrollbar{width:4px;}.kat-opts::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:4px;}
+        .kat-opt{padding:11px 16px;border-radius:12px;color:white;cursor:pointer;font-size:15px;transition:.12s;user-select:none;}
+        .kat-opt:hover{background:rgba(139,92,246,.18);color:#e9d5ff;}
+        .kat-opt.sel{background:rgba(139,92,246,.26);color:#e9d5ff;font-weight:600;}
+        .kat-opt.plch-opt{color:#9ca3af;}
+        .kat-line{height:1px;background:rgba(255,255,255,.08);margin:4px 8px;}
+        .kat-footer{margin:4px 8px 8px;}
+        .kat-add-row{
+            display:flex;align-items:center;gap:8px;padding:10px 14px;
+            border-radius:12px;color:#a78bfa;cursor:pointer;font-size:14px;
+            transition:.12s;border:1px dashed rgba(139,92,246,.28);
+        }
+        .kat-add-row:hover{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.5);}
+        .kat-add-area{padding:10px 0 4px;display:none;}
+        .kat-add-area.show{display:block;}
+        .kat-new-row{display:flex;gap:8px;}
+        .kat-new-inp{
+            flex:1;height:40px;background:rgba(255,255,255,.06);
+            border:1px solid rgba(139,92,246,.35);border-radius:12px;
+            padding:0 14px;font-size:14px;color:white;outline:none;
+        }
+        .kat-new-inp:focus{border-color:#8b5cf6;box-shadow:0 0 15px rgba(139,92,246,.2);}
+        .kat-new-inp::placeholder{color:#6b7280;}
+        .kat-new-btn{
+            height:40px;padding:0 16px;background:linear-gradient(135deg,#6366f1,#a855f7);
+            border:none;border-radius:12px;color:white;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;
+        }
+        .kat-new-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(139,92,246,.35);}
         @media(max-width:1080px){.cards,.analytics-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}.filter-grid{grid-template-columns:1fr 1fr}.filter-grid .search-wrapper{grid-column:1/-1}.filter-grid .reset-filter-btn{grid-column:1/-1;width:100%}.bar-row{grid-template-columns:100px 1fr 105px}.container{width:92%;padding:44px 0}.title{font-size:52px}.subtitle{font-size:17px}}
         @media(max-width:600px){.form-grid,.filter-grid,.report-grid,.modal-grid{grid-template-columns:1fr}.title{font-size:42px}.card,.panel,.form-box,.filter-section,.table-box{border-radius:24px;padding:22px}.top-bar{flex-direction:column}.bar-row{grid-template-columns:1fr}.bar-value{text-align:left}.modal-box{padding:24px}.modal-footer{flex-direction:column}.btn-cancel{width:100%;}.btn-update{width:100%;flex:auto}.value{font-size:32px}}
     </style>
 </head>
 <body>
 @php
-    $kategoriOptions = $kategoriOptions ?? ['Makanan','Transportasi','Tagihan','Hutang','Gaji','Belanja','Pendidikan','Kesehatan','Hiburan','Tabungan','Lainnya'];
+    $kategoriOptions = $kategoriOptions ?? ['Makanan','Minuman','Transportasi','Bensin','Tagihan','Paket Data','Hutang','Gaji','Belanja','Sparepart','Service Kereta','Pendidikan','Kesehatan','Hiburan','Tabungan','Lainnya'];
     $years = $transaksis->map(fn($t) => \Carbon\Carbon::parse($t->tanggal)->year)->unique()->sortDesc()->values();
     $transaksiDataRealtime = $transaksis->map(function($t) {
         $tanggal = \Carbon\Carbon::parse($t->tanggal);
@@ -355,12 +407,14 @@
                     <span class="date-icon" id="dateIconBtn">📅</span>
                     <input type="text" id="tanggal" name="tanggal" placeholder="Pilih tanggal" required readonly value="{{ old('tanggal') }}">
                 </div>
-                <select name="kategori" id="kategoriInput">
-                    <option value="">Kategori</option>
-                    @foreach($kategoriOptions as $kategori)
-                        <option value="{{ $kategori }}" {{ old('kategori') === $kategori ? 'selected' : '' }}>{{ $kategori }}</option>
-                    @endforeach
-                </select>
+                <div class="kat-wrap" id="kategoriInputWrap">
+                    <select name="kategori" id="kategoriInput">
+                        <option value="">Kategori</option>
+                        @foreach($kategoriOptions as $kategori)
+                            <option value="{{ $kategori }}" {{ old('kategori') === $kategori ? 'selected' : '' }}>{{ $kategori }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <input type="text" name="keterangan" placeholder="Keterangan" required maxlength="255" value="{{ old('keterangan') }}">
                 <input type="number" name="pemasukan" placeholder="Pemasukan" min="0" step="1" value="{{ old('pemasukan') }}">
                 <input type="number" name="pengeluaran" placeholder="Pengeluaran" min="0" step="1" value="{{ old('pengeluaran') }}">
@@ -389,10 +443,12 @@
                 <option value="">Semua Tahun</option>
                 @foreach($years as $year)<option value="{{ $year }}">{{ $year }}</option>@endforeach
             </select>
-            <select id="filterKategori">
-                <option value="">Semua Kategori</option>
-                @foreach($kategoriOptions as $kategori)<option value="{{ $kategori }}">{{ $kategori }}</option>@endforeach
-            </select>
+            <div class="kat-wrap size-sm" id="filterKategoriWrap">
+                <select id="filterKategori">
+                    <option value="">Semua Kategori</option>
+                    @foreach($kategoriOptions as $kategori)<option value="{{ $kategori }}">{{ $kategori }}</option>@endforeach
+                </select>
+            </div>
             <button class="reset-filter-btn" type="button" onclick="resetFilters()">✕ Reset</button>
         </div>
         <div style="margin-top:18px;">
@@ -475,7 +531,7 @@
             @csrf @method('PUT')
             <div class="modal-grid">
                 <div class="modal-field full"><label class="modal-label">Tanggal</label><div class="modal-date-wrapper" id="modalDateWrapper"><span class="modal-date-icon" id="modalDateIconBtn">📅</span><input type="text" id="editTanggal" name="tanggal" class="modal-input" placeholder="Pilih tanggal" required readonly></div></div>
-                <div class="modal-field"><label class="modal-label">Kategori</label><select id="editKategori" name="kategori" class="modal-input">@foreach($kategoriOptions as $kategori)<option value="{{ $kategori }}">{{ $kategori }}</option>@endforeach</select></div>
+                <div class="modal-field"><label class="modal-label">Kategori</label><div class="kat-wrap size-md" id="editKategoriWrap"><select id="editKategori" name="kategori" class="modal-input">@foreach($kategoriOptions as $kategori)<option value="{{ $kategori }}">{{ $kategori }}</option>@endforeach</select></div></div>
                 <div class="modal-field"><label class="modal-label">Keterangan</label><input type="text" id="editKeterangan" name="keterangan" class="modal-input" placeholder="Keterangan" maxlength="255" required></div>
                 <div class="modal-field"><label class="modal-label">Pemasukan</label><input type="number" id="editPemasukan" name="pemasukan" class="modal-input" placeholder="0" min="0" step="1"></div>
                 <div class="modal-field"><label class="modal-label">Pengeluaran</label><input type="number" id="editPengeluaran" name="pengeluaran" class="modal-input" placeholder="0" min="0" step="1"></div>
@@ -548,6 +604,7 @@
             if (getEl('filterTahun')) getEl('filterTahun').value = f.tahun || '';
             if (getEl('filterKategori')) getEl('filterKategori').value = f.kategori || '';
             if (getEl('searchInput')) getEl('searchInput').value = f.search || '';
+            if (_katFilter) _katFilter.setValue(f.kategori || '');
             syncMonthTab(f.bulan || ''); syncYearTab(f.tahun || '');
         } catch(e) {}
     }
@@ -721,6 +778,7 @@
         if (getEl('filterBulan')) getEl('filterBulan').value = '';
         if (getEl('filterTahun')) getEl('filterTahun').value = '';
         if (getEl('filterKategori')) getEl('filterKategori').value = '';
+        if (_katFilter) _katFilter.setValue('');
         syncMonthTab(''); syncYearTab(''); try { localStorage.removeItem(FILTER_KEY); } catch(e) {} applyFilters();
     }
     function setMonthTab(el) { const value = el.dataset.bulan || ''; if (getEl('filterBulan')) getEl('filterBulan').value = value; syncMonthTab(value); applyFilters(); }
@@ -748,7 +806,9 @@
         const form = getEl('formEdit'); if (!form) return;
         form.action = '/transaksi/' + btn.dataset.id;
         fpEdit.setDate(btn.dataset.tanggal || '', true);
-        getEl('editKategori').value = btn.dataset.kategori || 'Lainnya';
+        const kv = btn.dataset.kategori || 'Lainnya';
+        getEl('editKategori').value = kv;
+        if (_katEdit) _katEdit.setValue(kv);
         getEl('editKeterangan').value = btn.dataset.keterangan || '';
         getEl('editPemasukan').value = Number(btn.dataset.pemasukan || 0) > 0 ? btn.dataset.pemasukan : '';
         getEl('editPengeluaran').value = Number(btn.dataset.pengeluaran || 0) > 0 ? btn.dataset.pengeluaran : '';
@@ -764,6 +824,158 @@
         if (!validateNominal(getEl('editTanggal').value, getEl('editKeterangan').value, pemasukan, pengeluaran)) { e.preventDefault(); return; }
         const btn = getEl('btnUpdate'); if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan...'; }
     });
+
+    // ===== CUSTOM KATEGORI DROPDOWN ENGINE =====
+    var _katForm = null, _katFilter = null, _katEdit = null;
+    const _KAT_LS = 'keuangan_custom_kategori_v2';
+    const _katReg = [];
+
+    function _loadCustKat() { try { return JSON.parse(localStorage.getItem(_KAT_LS) || '[]'); } catch(e) { return []; } }
+    function _saveCustKat(arr) { try { localStorage.setItem(_KAT_LS, JSON.stringify(arr)); } catch(e) {} }
+
+    function buildKatSelect(cfg) {
+        var wrap = getEl(cfg.wrapId), sel = getEl(cfg.selId);
+        if (!wrap || !sel) return null;
+
+        // Read default options from native select
+        var defOpts = Array.from(sel.options).map(function(o){ return {v:o.value,l:o.text}; });
+        sel.style.display = 'none';
+
+        // Build DOM
+        var trigger = document.createElement('div');
+        trigger.className = 'kat-trigger' + (defOpts[0] && !defOpts[0].v ? ' plch' : '');
+
+        var menu = document.createElement('div');
+        menu.className = 'kat-menu';
+        menu.innerHTML =
+            '<div class="kat-opts"></div>' +
+            '<div class="kat-line"></div>' +
+            '<div class="kat-footer">' +
+              '<div class="kat-add-row">＋&nbsp; Tambah Kategori</div>' +
+              '<div class="kat-add-area">' +
+                '<div class="kat-new-row">' +
+                  '<input class="kat-new-inp" type="text" placeholder="Nama kategori baru..." maxlength="30">' +
+                  '<button class="kat-new-btn" type="button">Tambah</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+
+        wrap.appendChild(trigger);
+        wrap.appendChild(menu);
+
+        var optsEl = menu.querySelector('.kat-opts');
+        var addRow = menu.querySelector('.kat-add-row');
+        var addArea = menu.querySelector('.kat-add-area');
+        var newInp = menu.querySelector('.kat-new-inp');
+        var newBtn = menu.querySelector('.kat-new-btn');
+
+        var curVal = sel.value || '';
+        var isOpen = false;
+
+        function allOpts() {
+            var custom = _loadCustKat();
+            var defVals = defOpts.filter(function(o){ return o.v; }).map(function(o){ return o.v; });
+            var extra = custom.filter(function(c){ return defVals.indexOf(c) === -1; });
+            return defOpts.concat(extra.map(function(c){ return {v:c,l:c}; }));
+        }
+
+        function renderOpts() {
+            optsEl.innerHTML = '';
+            allOpts().forEach(function(opt) {
+                var d = document.createElement('div');
+                d.className = 'kat-opt' + (!opt.v ? ' plch-opt' : '') + (opt.v === curVal ? ' sel' : '');
+                d.textContent = opt.l;
+                (function(v){ d.addEventListener('click', function(){ pick(v); }); })(opt.v);
+                optsEl.appendChild(d);
+            });
+        }
+
+        function setTrigger() {
+            if (!curVal) {
+                trigger.textContent = cfg.placeholder;
+                trigger.className = 'kat-trigger plch';
+            } else {
+                var found = allOpts().find(function(o){ return o.v === curVal; });
+                trigger.textContent = found ? found.l : curVal;
+                trigger.className = 'kat-trigger';
+            }
+        }
+
+        function pick(val) {
+            curVal = val;
+            sel.value = val;
+            sel.dispatchEvent(new Event('change', {bubbles:true}));
+            setTrigger();
+            renderOpts();
+            closeMenu();
+        }
+
+        function openMenu() {
+            isOpen = true;
+            menu.classList.add('show');
+            trigger.classList.add('open');
+            addArea.classList.remove('show');
+            if (newInp) newInp.value = '';
+        }
+
+        function closeMenu() {
+            isOpen = false;
+            menu.classList.remove('show');
+            trigger.classList.remove('open');
+        }
+
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (isOpen) closeMenu();
+            else { _katReg.forEach(function(i){ if(i!==inst) i.close(); }); openMenu(); }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!wrap.contains(e.target)) closeMenu();
+        });
+
+        addRow.addEventListener('click', function(e) {
+            e.stopPropagation();
+            addArea.classList.toggle('show');
+            if (addArea.classList.contains('show') && newInp) { newInp.value = ''; newInp.focus(); }
+        });
+
+        function doAdd() {
+            var name = (newInp.value || '').trim();
+            if (!name) { newInp.focus(); return; }
+            var custom = _loadCustKat();
+            var allv = allOpts().map(function(o){ return (o.v||'').toLowerCase(); });
+            if (allv.indexOf(name.toLowerCase()) === -1) {
+                custom.push(name);
+                _saveCustKat(custom);
+                _katReg.forEach(function(i){ i.refresh(); });
+            }
+            pick(name);
+        }
+
+        newBtn.addEventListener('click', function(e){ e.stopPropagation(); doAdd(); });
+        newInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){e.preventDefault();doAdd();} e.stopPropagation(); });
+        newInp.addEventListener('click', function(e){ e.stopPropagation(); });
+
+        var inst = {
+            getValue: function(){ return curVal; },
+            setValue: function(v){ curVal=v; sel.value=v; setTrigger(); renderOpts(); },
+            refresh: function(){ renderOpts(); },
+            close: closeMenu,
+        };
+
+        _katReg.push(inst);
+        curVal = sel.value || '';
+        setTrigger();
+        renderOpts();
+        return inst;
+    }
+
+    // Init all 3 dropdown instances
+    _katForm   = buildKatSelect({wrapId:'kategoriInputWrap', selId:'kategoriInput',   placeholder:'Kategori'});
+    _katFilter = buildKatSelect({wrapId:'filterKategoriWrap',selId:'filterKategori',  placeholder:'Semua Kategori'});
+    _katEdit   = buildKatSelect({wrapId:'editKategoriWrap',  selId:'editKategori',    placeholder:'Pilih Kategori'});
+    // ===== END CUSTOM KATEGORI DROPDOWN =====
 
     function initApp() { restoreFilterState(); applyFilters(); }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp); else initApp();

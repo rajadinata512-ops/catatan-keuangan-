@@ -12,11 +12,16 @@ class TransaksiController extends Controller
     {
         return [
             'Makanan',
+            'Minuman',
             'Transportasi',
+            'Bensin',
             'Tagihan',
+            'Paket Data',
             'Hutang',
             'Gaji',
             'Belanja',
+            'Sparepart',
+            'Service Kereta',
             'Pendidikan',
             'Kesehatan',
             'Hiburan',
@@ -50,15 +55,20 @@ class TransaksiController extends Controller
         }
 
         $map = [
-            'Makanan' => ['kopi', 'nasi', 'makan', 'goreng', 'bakso', 'mie', 'ayam', 'minum', 'latte', 'kede', 'kafe', 'cafe'],
-            'Transportasi' => ['bensin', 'pertalite', 'solar', 'parkir', 'grab', 'gojek', 'angkot', 'transport', 'ojek'],
-            'Tagihan' => ['listrik', 'air', 'wifi', 'pulsa', 'kuota', 'kos', 'kost', 'kontrakan', 'tagihan'],
-            'Hutang' => ['hutang', 'utang', 'lunasin', 'lunas', 'bayar pinjam', 'pinjaman'],
-            'Belanja' => ['beli', 'indomaret', 'alfamart', 'paket', 'shopee', 'tokopedia', 'bima'],
-            'Pendidikan' => ['kampus', 'kuliah', 'buku', 'print', 'fotocopy', 'kelas', 'tugas'],
-            'Kesehatan' => ['obat', 'dokter', 'klinik', 'rumah sakit', 'vitamin'],
-            'Hiburan' => ['game', 'nonton', 'bioskop', 'spotify', 'netflix', 'hiburan'],
-            'Tabungan' => ['tabung', 'saving', 'deposit'],
+            'Bensin'         => ['bensin', 'pertalite', 'pertamax', 'solar', 'premium bbl'],
+            'Paket Data'     => ['paket data', 'kuota internet'],
+            'Sparepart'      => ['sparepart', 'spare part', 'suku cadang', 'onderdil', 'kampas', 'busi'],
+            'Service Kereta' => ['service motor', 'servis motor', 'ganti oli', 'bengkel motor', 'tune up'],
+            'Makanan'        => ['kopi', 'nasi', 'makan', 'goreng', 'bakso', 'mie', 'ayam', 'latte', 'kede', 'kafe', 'cafe'],
+            'Minuman'        => ['minuman', 'minum', 'juice', 'jus', 'susu', 'es teh'],
+            'Transportasi'   => ['parkir', 'grab', 'gojek', 'angkot', 'transport', 'ojek'],
+            'Tagihan'        => ['listrik', 'air', 'wifi', 'pulsa', 'kuota', 'kos', 'kost', 'kontrakan', 'tagihan'],
+            'Hutang'         => ['hutang', 'utang', 'lunasin', 'lunas', 'bayar pinjam', 'pinjaman'],
+            'Belanja'        => ['beli', 'indomaret', 'alfamart', 'paket', 'shopee', 'tokopedia', 'bima'],
+            'Pendidikan'     => ['kampus', 'kuliah', 'buku', 'print', 'fotocopy', 'kelas', 'tugas'],
+            'Kesehatan'      => ['obat', 'dokter', 'klinik', 'rumah sakit', 'vitamin'],
+            'Hiburan'        => ['game', 'nonton', 'bioskop', 'spotify', 'netflix', 'hiburan'],
+            'Tabungan'       => ['tabung', 'saving', 'deposit'],
         ];
 
         foreach ($map as $kategori => $keywords) {
