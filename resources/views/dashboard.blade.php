@@ -103,7 +103,7 @@
         .month-group-row td{background:transparent!important;padding:22px 0 4px!important;border-radius:0!important}.month-group-title{display:flex;align-items:center;gap:12px;color:#c4b5fd;font-size:15px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}.month-group-title:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,rgba(139,92,246,.45),transparent)}.month-group-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.28);box-shadow:0 0 18px rgba(139,92,246,.12);}
         .row-actions{display:flex;gap:8px;align-items:center}.btn-edit-row{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.35);color:#a5b4fc;padding:8px 16px;border-radius:12px;font-size:13px;font-weight:600;white-space:nowrap}.btn-edit-row:hover{background:rgba(99,102,241,.28);transform:translateY(-1px);box-shadow:0 0 12px rgba(99,102,241,.3)}.btn-del-row{background:rgba(255,70,70,.1);border:1px solid rgba(255,70,70,.25);color:#f87171;padding:8px 16px;border-radius:12px;font-size:13px;font-weight:600;white-space:nowrap}.btn-del-row:hover{background:rgba(255,70,70,.2);transform:translateY(-1px)}
 
-        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}.modal-overlay.open{display:flex}.modal-box{background:rgba(8,8,20,.97);border:1px solid rgba(139,92,246,.25);border-radius:30px;padding:36px;width:100%;max-width:620px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 40px rgba(139,92,246,.12);position:relative;animation:modalIn .22s ease}@keyframes modalIn{from{opacity:0;transform:scale(.93) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}.modal-title{font-size:22px;font-weight:700;margin-bottom:24px;background:linear-gradient(135deg,#8b5cf6,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.modal-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;width:36px;height:36px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center}.modal-close:hover{background:rgba(255,70,70,.15);color:#f87171;border-color:rgba(255,70,70,.3)}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.modal-field{display:flex;flex-direction:column;gap:8px}.modal-field.full{grid-column:1/-1}.modal-label{font-size:13px;color:#9ca3af;font-weight:500;padding-left:4px}.modal-input{height:54px;border:none;outline:none;border-radius:16px;padding:0 18px;font-size:16px;color:white;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:.2s}.modal-input:focus{border:1px solid #8b5cf6;box-shadow:0 0 20px rgba(139,92,246,.2)}.modal-footer{display:flex;gap:12px;margin-top:24px}.btn-update{flex:1;height:54px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-size:17px;border-radius:16px}.btn-cancel{height:54px;padding:0 28px;background:rgba(255,255,255,.04);color:#9ca3af;font-size:17px;border-radius:16px;border:1px solid rgba(255,255,255,.08)}.btn-update:hover,.btn-cancel:hover{transform:translateY(-1px)}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}.modal-overlay.open{display:flex}.modal-box{background:rgba(8,8,20,.97);border:1px solid rgba(139,92,246,.25);border-radius:30px;padding:36px;width:100%;max-width:620px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 40px rgba(139,92,246,.12);position:relative;animation:modalIn .22s ease;overflow:visible;}@keyframes modalIn{from{opacity:0;transform:scale(.93) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}.modal-title{font-size:22px;font-weight:700;margin-bottom:24px;background:linear-gradient(135deg,#8b5cf6,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.modal-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;width:36px;height:36px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center}.modal-close:hover{background:rgba(255,70,70,.15);color:#f87171;border-color:rgba(255,70,70,.3)}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;overflow:visible;}.modal-field{display:flex;flex-direction:column;gap:8px;overflow:visible;position:relative;}.modal-field.full{grid-column:1/-1}.modal-label{font-size:13px;color:#9ca3af;font-weight:500;padding-left:4px}.modal-input{height:54px;border:none;outline:none;border-radius:16px;padding:0 18px;font-size:16px;color:white;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:.2s}.modal-input:focus{border:1px solid #8b5cf6;box-shadow:0 0 20px rgba(139,92,246,.2)}.modal-footer{display:flex;gap:12px;margin-top:24px}.btn-update{flex:1;height:54px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-size:17px;border-radius:16px}.btn-cancel{height:54px;padding:0 28px;background:rgba(255,255,255,.04);color:#9ca3af;font-size:17px;border-radius:16px;border:1px solid rgba(255,255,255,.08)}.btn-update:hover,.btn-cancel:hover{transform:translateY(-1px)}
 
        /* ===== CUSTOM DATEPICKER DARK PURPLE THEME ===== */
 .flatpickr-calendar {
@@ -259,12 +259,12 @@
         .kat-menu{
             position:absolute;top:calc(100% + 6px);left:0;right:0;
             background:#111427;border:1px solid rgba(139,92,246,.4);border-radius:18px;
-            z-index:9999;box-shadow:0 22px 55px rgba(0,0,0,.65),0 0 28px rgba(139,92,246,.15);
-            display:none;overflow:hidden;min-width:180px;
+            z-index:10100;box-shadow:0 22px 55px rgba(0,0,0,.65),0 0 28px rgba(139,92,246,.15);
+            display:none;overflow:visible;min-width:180px;
         }
         .kat-menu.show{display:block;animation:katSlide .18s ease;}
         @keyframes katSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-        .kat-opts{max-height:240px;overflow-y:auto;padding:8px;}
+        .kat-opts{max-height:220px;overflow-y:auto;padding:8px;border-radius:18px 18px 0 0;}
         .kat-opts::-webkit-scrollbar{width:4px;}.kat-opts::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:4px;}
         .kat-opt{padding:11px 16px;border-radius:12px;color:white;cursor:pointer;font-size:15px;transition:.12s;user-select:none;}
         .kat-opt:hover{background:rgba(139,92,246,.18);color:#e9d5ff;}
@@ -903,6 +903,13 @@
 
         function pick(val) {
             curVal = val;
+            // Ensure native select has this option (for custom categories)
+            if (val && !sel.querySelector('option[value="' + val.replace(/"/g, '&quot;') + '"]')) {
+                var opt = document.createElement('option');
+                opt.value = val;
+                opt.textContent = val;
+                sel.appendChild(opt);
+            }
             sel.value = val;
             sel.dispatchEvent(new Event('change', {bubbles:true}));
             setTrigger();
@@ -951,6 +958,8 @@
                 _katReg.forEach(function(i){ i.refresh(); });
             }
             pick(name);
+            if (newInp) newInp.value = '';
+            addArea.classList.remove('show');
         }
 
         newBtn.addEventListener('click', function(e){ e.stopPropagation(); doAdd(); });
@@ -959,7 +968,22 @@
 
         var inst = {
             getValue: function(){ return curVal; },
-            setValue: function(v){ curVal=v; sel.value=v; setTrigger(); renderOpts(); },
+            setValue: function(v){
+                curVal = v;
+                // Ensure native select has this option (for custom categories from DB)
+                if (v && !sel.querySelector('option[value="' + v.replace(/"/g,'&quot;') + '"]')) {
+                    var opt = document.createElement('option');
+                    opt.value = v; opt.textContent = v;
+                    sel.appendChild(opt);
+                    // Also save to custom kat if not already there
+                    var custom = _loadCustKat();
+                    var defVals = defOpts.filter(function(o){return o.v;}).map(function(o){return o.v.toLowerCase();});
+                    if (defVals.indexOf(v.toLowerCase()) === -1 && custom.map(function(c){return c.toLowerCase();}).indexOf(v.toLowerCase()) === -1) {
+                        custom.push(v); _saveCustKat(custom);
+                    }
+                }
+                sel.value = v; setTrigger(); renderOpts();
+            },
             refresh: function(){ renderOpts(); },
             close: closeMenu,
         };
