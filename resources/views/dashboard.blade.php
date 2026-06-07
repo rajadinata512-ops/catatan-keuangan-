@@ -849,6 +849,7 @@
         menu.className = 'kat-menu';
         menu.innerHTML =
             '<div class="kat-opts"></div>' +
+            (cfg.noAdd ? '' :
             '<div class="kat-line"></div>' +
             '<div class="kat-footer">' +
               '<div class="kat-add-row">＋&nbsp; Tambah Kategori</div>' +
@@ -858,16 +859,16 @@
                   '<button class="kat-new-btn" type="button">Tambah</button>' +
                 '</div>' +
               '</div>' +
-            '</div>';
+            '</div>');
 
         wrap.appendChild(trigger);
         wrap.appendChild(menu);
 
         var optsEl = menu.querySelector('.kat-opts');
-        var addRow = menu.querySelector('.kat-add-row');
-        var addArea = menu.querySelector('.kat-add-area');
-        var newInp = menu.querySelector('.kat-new-inp');
-        var newBtn = menu.querySelector('.kat-new-btn');
+        var addRow  = cfg.noAdd ? null : menu.querySelector('.kat-add-row');
+        var addArea = cfg.noAdd ? null : menu.querySelector('.kat-add-area');
+        var newInp  = cfg.noAdd ? null : menu.querySelector('.kat-new-inp');
+        var newBtn  = cfg.noAdd ? null : menu.querySelector('.kat-new-btn');
 
         var curVal = sel.value || '';
         var isOpen = false;
@@ -921,7 +922,7 @@
             isOpen = true;
             menu.classList.add('show');
             trigger.classList.add('open');
-            addArea.classList.remove('show');
+            if (addArea) addArea.classList.remove('show');
             if (newInp) newInp.value = '';
         }
 
@@ -941,10 +942,10 @@
             if (!wrap.contains(e.target)) closeMenu();
         });
 
-        addRow.addEventListener('click', function(e) {
+        if (addRow) addRow.addEventListener('click', function(e) {
             e.stopPropagation();
-            addArea.classList.toggle('show');
-            if (addArea.classList.contains('show') && newInp) { newInp.value = ''; newInp.focus(); }
+            if (addArea) addArea.classList.toggle('show');
+            if (addArea && addArea.classList.contains('show') && newInp) { newInp.value = ''; newInp.focus(); }
         });
 
         function doAdd() {
@@ -959,12 +960,12 @@
             }
             pick(name);
             if (newInp) newInp.value = '';
-            addArea.classList.remove('show');
+            if (addArea) addArea.classList.remove('show');
         }
 
-        newBtn.addEventListener('click', function(e){ e.stopPropagation(); doAdd(); });
-        newInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){e.preventDefault();doAdd();} e.stopPropagation(); });
-        newInp.addEventListener('click', function(e){ e.stopPropagation(); });
+        if (newBtn) newBtn.addEventListener('click', function(e){ e.stopPropagation(); doAdd(); });
+        if (newInp) newInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){e.preventDefault();doAdd();} e.stopPropagation(); });
+        if (newInp) newInp.addEventListener('click', function(e){ e.stopPropagation(); });
 
         var inst = {
             getValue: function(){ return curVal; },
@@ -997,11 +998,33 @@
 
     // Init all 3 dropdown instances
     _katForm   = buildKatSelect({wrapId:'kategoriInputWrap', selId:'kategoriInput',   placeholder:'Kategori'});
-    _katFilter = buildKatSelect({wrapId:'filterKategoriWrap',selId:'filterKategori',  placeholder:'Semua Kategori'});
+    _katFilter = buildKatSelect({wrapId:'filterKategoriWrap',selId:'filterKategori',  placeholder:'Semua Kategori', noAdd:true});
     _katEdit   = buildKatSelect({wrapId:'editKategoriWrap',  selId:'editKategori',    placeholder:'Pilih Kategori'});
     // ===== END CUSTOM KATEGORI DROPDOWN =====
 
-    function initApp() { restoreFilterState(); applyFilters(); }
+    function populateFilterKategori() {
+        // Build unique categories from actual transaction data
+        var seen = {};
+        var cats = [];
+        transaksiData.forEach(function(t) {
+            var k = t.kategori || 'Lainnya';
+            if (!seen[k]) { seen[k] = true; cats.push(k); }
+        });
+        cats.sort();
+        var sel = getEl('filterKategori');
+        if (!sel) return;
+        // Remove all existing options except the first (Semua Kategori)
+        while (sel.options.length > 1) sel.remove(1);
+        cats.forEach(function(k) {
+            var opt = document.createElement('option');
+            opt.value = k; opt.textContent = k;
+            sel.appendChild(opt);
+        });
+        // Sync the custom dropdown display
+        if (_katFilter) _katFilter.refresh();
+    }
+
+    function initApp() { populateFilterKategori(); restoreFilterState(); applyFilters(); }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp); else initApp();
 </script>
 </body>
