@@ -863,7 +863,7 @@
             '</div>');
 
         wrap.appendChild(trigger);
-        wrap.appendChild(menu);
+        document.body.appendChild(menu); // portal: escapes backdrop-filter stacking context
 
         var optsEl = menu.querySelector('.kat-opts');
         var addRow  = cfg.noAdd ? null : menu.querySelector('.kat-add-row');
@@ -924,12 +924,17 @@
 
         function openMenu() {
             isOpen = true;
-            // Position menu using fixed coords (escapes backdrop-filter stacking context)
+            // Position via fixed coords (portal to body, escapes backdrop-filter)
+            menu.classList.add('show'); // show first to measure height
             var rect = trigger.getBoundingClientRect();
-            menu.style.top   = (rect.bottom + 6) + 'px';
+            var menuH = menu.offsetHeight;
+            var spaceBelow = window.innerHeight - rect.bottom;
+            var top = (spaceBelow >= menuH + 10 || spaceBelow >= rect.top)
+                ? rect.bottom + 6
+                : rect.top - menuH - 6;
+            menu.style.top   = top + 'px';
             menu.style.left  = rect.left + 'px';
             menu.style.width = rect.width + 'px';
-            menu.classList.add('show');
             trigger.classList.add('open');
             if (addArea) addArea.classList.remove('show');
             if (newInp) newInp.value = '';
@@ -944,7 +949,12 @@
         function reposition() {
             if (!isOpen) return;
             var rect = trigger.getBoundingClientRect();
-            menu.style.top   = (rect.bottom + 6) + 'px';
+            var menuH = menu.offsetHeight;
+            var spaceBelow = window.innerHeight - rect.bottom;
+            var top = (spaceBelow >= menuH + 10 || spaceBelow >= rect.top)
+                ? rect.bottom + 6
+                : rect.top - menuH - 6;
+            menu.style.top   = top + 'px';
             menu.style.left  = rect.left + 'px';
             menu.style.width = rect.width + 'px';
         }
