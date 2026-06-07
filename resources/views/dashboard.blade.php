@@ -539,33 +539,41 @@
 
     function positionCalendar(inputEl, calendarEl) {
         const rect = inputEl.getBoundingClientRect();
-        calendarEl.style.position = 'fixed';
-        calendarEl.style.zIndex   = '99999';
-        calendarEl.style.top      = (rect.bottom + 8) + 'px';
-        calendarEl.style.left     = rect.left + 'px';
         const calW = calendarEl.offsetWidth || 308;
-        const overflowRight = rect.left + calW - window.innerWidth;
-        if (overflowRight > 0) {
-            calendarEl.style.left = Math.max(8, rect.left - overflowRight - 8) + 'px';
+        const calH = calendarEl.offsetHeight || 280;
+        // Selalu pakai fixed supaya relatif ke viewport, bukan halaman
+        calendarEl.style.setProperty('position', 'fixed', 'important');
+        calendarEl.style.setProperty('z-index', '999999', 'important');
+        // Hitung top: prefer di bawah input, kalau kurang ruang taruh di atas
+        let top = rect.bottom + 6;
+        if (top + calH > window.innerHeight - 8) {
+            top = Math.max(8, rect.top - calH - 6);
         }
+        calendarEl.style.setProperty('top', top + 'px', 'important');
+        // Hitung left: jangan overflow kanan
+        let left = rect.left;
+        if (left + calW > window.innerWidth - 8) {
+            left = Math.max(8, window.innerWidth - calW - 8);
+        }
+        calendarEl.style.setProperty('left', left + 'px', 'important');
     }
 
     const fp = safeFlatpickr('#tanggal', {
-        locale:'id', dateFormat:'Y-m-d', monthSelectorType:'static', maxDate:'today',
+        locale: 'id', dateFormat: 'Y-m-d', monthSelectorType: 'static', maxDate: 'today',
         appendTo: document.body,
-        positionElement: getEl('tanggal'),
-        onOpen: function(selectedDates, dateStr, instance) {
+        static: false,
+        onOpen: function(sd, ds, instance) {
             getEl('dateWrapper')?.classList.add('active');
-            positionCalendar(getEl('tanggal'), instance.calendarContainer);
+            // rAF ganda: tunggu flatpickr selesai posisikan dirinya, baru kita override
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    positionCalendar(getEl('tanggal'), instance.calendarContainer);
+                });
+            });
         },
-        onReady: function(selectedDates, dateStr, instance) {
-            instance.calendarContainer.style.position = 'fixed';
-            instance.calendarContainer.style.zIndex = '99999';
-        },
-        onClose: function(){ getEl('dateWrapper')?.classList.remove('active'); }
+        onClose: function() { getEl('dateWrapper')?.classList.remove('active'); }
     });
 
-    // Reposisi saat scroll / resize agar kalender tidak lari ke atas
     function keepFpInPlace() {
         if (fp && fp.isOpen && fp.calendarContainer) {
             positionCalendar(getEl('tanggal'), fp.calendarContainer);
@@ -573,22 +581,24 @@
     }
     window.addEventListener('scroll', keepFpInPlace, true);
     window.addEventListener('resize', keepFpInPlace);
-
-    getEl('dateIconBtn')?.addEventListener('click', function(e){e.stopPropagation(); fp.isOpen ? fp.close() : fp.open();});
+    getEl('dateIconBtn')?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        fp.isOpen ? fp.close() : fp.open();
+    });
 
     const fpEdit = safeFlatpickr('#editTanggal', {
-        locale:'id', dateFormat:'Y-m-d', monthSelectorType:'static', maxDate:'today',
+        locale: 'id', dateFormat: 'Y-m-d', monthSelectorType: 'static', maxDate: 'today',
         appendTo: document.body,
-        positionElement: getEl('editTanggal'),
-        onOpen: function(selectedDates, dateStr, instance) {
+        static: false,
+        onOpen: function(sd, ds, instance) {
             getEl('modalDateWrapper')?.classList.add('active');
-            positionCalendar(getEl('editTanggal'), instance.calendarContainer);
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    positionCalendar(getEl('editTanggal'), instance.calendarContainer);
+                });
+            });
         },
-        onReady: function(selectedDates, dateStr, instance) {
-            instance.calendarContainer.style.position = 'fixed';
-            instance.calendarContainer.style.zIndex = '99999';
-        },
-        onClose: function(){ getEl('modalDateWrapper')?.classList.remove('active'); }
+        onClose: function() { getEl('modalDateWrapper')?.classList.remove('active'); }
     });
 
     function keepFpEditInPlace() {
@@ -598,8 +608,10 @@
     }
     window.addEventListener('scroll', keepFpEditInPlace, true);
     window.addEventListener('resize', keepFpEditInPlace);
-
-    getEl('modalDateIconBtn')?.addEventListener('click', function(e){e.stopPropagation(); fpEdit.isOpen ? fpEdit.close() : fpEdit.open();});
+    getEl('modalDateIconBtn')?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        fpEdit.isOpen ? fpEdit.close() : fpEdit.open();
+    });
 
     function formatRupiah(n) {
         n = Number(n) || 0;
